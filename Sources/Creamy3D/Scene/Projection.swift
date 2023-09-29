@@ -6,10 +6,11 @@
 //
 
 import simd
+import CoreGraphics
 
 struct Projection {
-    let width: Float
-    let height: Float
+    let width: CGFloat
+    let height: CGFloat
     let nearZ: Float
     let farZ: Float
     

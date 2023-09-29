@@ -13,6 +13,10 @@ public protocol Object {
 @resultBuilder
 public enum ObjectBuilder {
     
+    public static func buildBlock() -> EmptyObject {
+        .init()
+    }
+    
     public static func buildBlock<T: Object>(_ component: T) -> T {
         component
     }

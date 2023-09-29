@@ -51,11 +51,7 @@ extension MeshNode: Renderable {
         projection: Projection
     ) {
         let options = mesh.options
-        self.position = .init(
-            Float(options.offset.width),
-            Float(options.offset.height),
-            0.0
-        )
+        self.position = calculatePosition(options: options)
         self.rotation = .init(
             angle: Float(options.rotation.0.radians),
             axis: .init(options.rotation.1)
@@ -88,12 +84,13 @@ extension MeshNode: Renderable {
         encoder.setVertexBytes(&uniforms, length: MemoryLayout<MeshUniforms>.stride, index: 3)
 
         // Draw the mesh using the index buffer
-        let mtkSubmesh = mesh.submeshes[0]
-        encoder.drawIndexedPrimitives(type: mtkSubmesh.primitiveType,
-                                      indexCount: mtkSubmesh.indexCount,
-                                      indexType: mtkSubmesh.indexType,
-                                      indexBuffer: mtkSubmesh.indexBuffer.buffer,
-                                      indexBufferOffset: mtkSubmesh.indexBuffer.offset)
+        for mtkSubmesh in mesh.submeshes {
+            encoder.drawIndexedPrimitives(type: mtkSubmesh.primitiveType,
+                                          indexCount: mtkSubmesh.indexCount,
+                                          indexType: mtkSubmesh.indexType,
+                                          indexBuffer: mtkSubmesh.indexBuffer.buffer,
+                                          indexBufferOffset: mtkSubmesh.indexBuffer.offset)
+        }
     }
     
     // MARK: - Utils
@@ -101,32 +98,52 @@ extension MeshNode: Renderable {
         guard let mesh, options.isResizable else {
             return .zero
         }
-        let viewSize = SIMD2<Float>(projection.width, projection.height)
-        let size = SIMD2<Float>(mesh.size.x, mesh.size.y)
-        var scale = viewSize / size
+        let frameSize = calculateSize(options: options, projection: projection)
+        let meshSize = mesh.size.xy
+        var scale = frameSize / meshSize
         
         if let aspectRatio = options.aspectRatio {
-            switch aspectRatio {
-            case let (aspectRatio, .fit):
-                let meshAspectRatio = CGFloat(size.x / size.y)
-                let targetRatio = aspectRatio ?? meshAspectRatio
-                if targetRatio > meshAspectRatio {
-                    scale.x = scale.y * Float(meshAspectRatio / targetRatio)
+            let meshAspectRatio = CGFloat(meshSize.x / meshSize.y)
+            let targetRatio = aspectRatio.0 ?? meshAspectRatio
+            let frameRation = CGFloat(frameSize.x / frameSize.y)
+            
+            switch aspectRatio.1 {
+            case .fit:
+                if targetRatio > frameRation {
+                    scale.y = scale.y * Float(frameRation / targetRatio)
                 } else {
-                    scale.y = scale.x * Float(targetRatio / meshAspectRatio)
+                    scale.x = scale.x * Float(targetRatio / frameRation)
                 }
-            case let (aspectRatio, .fill):
-                let meshAspectRatio = CGFloat(size.x / size.y)
-                let targetRatio = aspectRatio ?? meshAspectRatio
-                if targetRatio > meshAspectRatio {
-                    scale.y = scale.x * Float(targetRatio / meshAspectRatio)
+            case .fill:
+                if targetRatio > frameRation {
+                    scale.x = scale.x / Float(frameRation / targetRatio)
                 } else {
-                    scale.x = scale.y * Float(meshAspectRatio / targetRatio)
+                    scale.y = scale.y / Float(targetRatio / frameRation)
                 }
             }
         }
         
         return .init(scale.x, scale.y, min(scale.x, scale.y))
+    }
+    
+    private func calculateSize(options: Mesh.Options, projection: Projection) -> SIMD2<Float> {
+        let horizontalInset = options.insets.leading + options.insets.trailing
+        let verticalInsets = options.insets.top + options.insets.bottom
+        let frameWidth = options.frame?.width ?? projection.width
+        let frameHeight = options.frame?.height ?? projection.height
+        
+        return .init(
+            Float(frameWidth - horizontalInset),
+            Float(frameHeight - verticalInsets)
+        )
+    }
+    
+    private func calculatePosition(options: Mesh.Options) -> SIMD3<Float> {
+        .init(
+            Float(options.offset.width + options.insets.leading / 2.0 - options.insets.trailing / 2.0),
+            Float(options.offset.height + options.insets.top / 2.0 - options.insets.bottom / 2.0),
+            0.0
+        )
     }
 }
 
@@ -134,6 +151,13 @@ extension SIMD4 {
     
     var xyz: SIMD3<Scalar> {
         .init(x, y, z)
+    }
+}
+
+extension SIMD3 {
+    
+    var xy: SIMD2<Scalar> {
+        .init(x, y)
     }
 }
 

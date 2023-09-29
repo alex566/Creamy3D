@@ -20,7 +20,9 @@ public struct Mesh: Object {
         var isResizable: Bool
         var aspectRatio: (CGFloat?, ContentMode)?
         var offset: CGSize
-        var rotation: (Angle, SIMD3<Double>)
+        var rotation: (angle: Angle, axis: SIMD3<Double>)
+        var frame: (width: CGFloat?, height: CGFloat?)?
+        var insets: EdgeInsets
     }
     
     let source: Source
@@ -38,7 +40,9 @@ public struct Mesh: Object {
                 isResizable: false,
                 aspectRatio: nil, 
                 offset: .zero, 
-                rotation: (.zero, .zero)
+                rotation: (.zero, .zero),
+                frame: nil, 
+                insets: .init()
             )
         )
     }
@@ -130,6 +134,53 @@ public extension Mesh {
             source: source,
             material: material,
             options: options
+        )
+    }
+}
+
+public extension Mesh {
+    
+    func frame(
+        width: CGFloat? = nil,
+        height: CGFloat? = nil
+    ) -> Mesh {
+        var options = self.options
+        options.frame = (width, height)
+        return .init(
+            source: source,
+            material: material,
+            options: options
+        )
+    }
+    
+    @available(*, deprecated, message: "Please pass one or more parameters.")
+    func frame() -> Mesh {
+        self
+    }
+}
+
+public extension Mesh {
+    
+    func padding(_ insets: EdgeInsets) -> Mesh {
+        var options = self.options
+        options.insets = insets
+        return .init(
+            source: source,
+            material: material,
+            options: options
+        )
+    }
+    
+    func padding(_ edges: Edge.Set = .all, _ length: CGFloat = 16.0) -> Mesh {
+        padding(insets(edges: edges, length: length))
+    }
+    
+    private func insets(edges: Edge.Set, length: CGFloat) -> EdgeInsets {
+        .init(
+            top: edges.contains(.top) ? length : 0.0,
+            leading: edges.contains(.leading) ? length : 0.0,
+            bottom: edges.contains(.bottom) ? length : 0.0,
+            trailing: edges.contains(.trailing) ? length : 0.0
         )
     }
 }

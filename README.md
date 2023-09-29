@@ -15,7 +15,7 @@ CreamyView {
 ```
 
 ## 🛠️ How to Use
-To infuse a model into your scene, simply start with CreamyView. This view adopts the size of its parent container and eagerly waits for a model builder argument. With a design principle that mirrors SwiftUI's Image modifiers, interacting with your model feels natural and intuitive. For instance, the .resizable() modifier scales your model to occupy the entire container space.
+To infuse a model into your scene, simply start with CreamyView. This view adopts the size of its parent container and eagerly waits for a model builder argument. With a design principle that mirrors SwiftUI's Image modifiers, interacting with your model feels natural and intuitive. For instance, the `.resizable()` modifier scales your model to occupy the entire container space.
 
 ## 🔍 Technical Details
 * File Support: Currently, only the STL and OBJ file formats are supported.
@@ -24,14 +24,22 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 * Rendering: Rendering prowess is derived from MetalKit.
 
 ## 🚧 Work in Progress (Ordered by Priority)
-- [ ] Scene background customization.
+- [ ] ~Scene background customization.~ (Just use `.background` of the View)
 - [X] Modifiers: `offset`, `rotationEffect`, `rotation3DEffect`.
-- [ ] Modifiers: `frame` and `padding`.
+- [X] Modifiers: `frame` and `padding`.
 - [ ] Materials composition
-- [ ] Animations support
 - [ ] More materials support
+- [ ] Animations support
 - [ ] Multiple Meshes support
 - [ ] Bloom effect support
 
 ## 🤔 Features under Consideration
 * MetalFX upscale for performance optimization
+* Clonner, which repeats Meshes. Example:
+```Swift
+Clonner(.grid(.init(x: 10, y: 10, z: 10)), spacing: 16.0) {
+    Mesh(source: .sphere)
+        .resizable()
+        .frame(width: 50.0, height: 50.0)
+}
+```

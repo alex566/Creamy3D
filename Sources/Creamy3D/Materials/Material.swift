@@ -13,6 +13,10 @@ public protocol MeshMaterial {
 @resultBuilder
 public enum MeshMaterialBuilder {
     
+    public func buildBlock() -> ColorMaterial {
+        .init(color: .black)
+    }
+    
     public static func buildBlock<T: MeshMaterial>(_ component: T) -> T {
         component
     }
