@@ -145,6 +145,8 @@ extension Renderer: MTKViewDelegate {
         guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
             return
         }
+        encoder.setCullMode(.back)
+        
         meshes.values.forEach { mesh in
             mesh.render(encoder: encoder,
                         viewProjectionMatrix: projectionMatrix * viewMatrix,
