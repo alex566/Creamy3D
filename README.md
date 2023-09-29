@@ -18,8 +18,8 @@ CreamyView {
 To infuse a model into your scene, simply start with CreamyView. This view adopts the size of its parent container and eagerly waits for a model builder argument. With a design principle that mirrors SwiftUI's Image modifiers, interacting with your model feels natural and intuitive. For instance, the .resizable() modifier scales your model to occupy the entire container space.
 
 ## 🔍 Technical Details
-* File Support: Currently, only the STL file format is supported due to the library's non-support for submeshes.
-* Camera Details: An orthographic camera is employed, meticulously calibrated to the view size and coordinated like its SwiftUI counterpart.
+* File Support: Currently, only the STL and OBJ file formats are supported.
+* Camera Details: An orthographic camera is used, calibrated to the view size and coordinated like its SwiftUI counterpart.
 * Mesh Information: The library leans on ModelIO for both model loading and generation.
 * Rendering: Rendering prowess is derived from MetalKit.
 
