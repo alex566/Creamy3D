@@ -15,13 +15,13 @@ CreamyView {
 ```
 
 ## 🛠️ How to Use
-To infuse a model into your scene, simply start with CreamyView. This view adopts the size of its parent container and eagerly waits for a model builder argument. With a design principle that mirrors SwiftUI's Image modifiers, interacting with your model feels natural and intuitive. For instance, the `.resizable()` modifier scales your model to occupy the entire container space.
+To infuse a model into your scene, simply start with CreamyView. This view adopts the size of its parent container and expects a model builder as an input argument. With a design principle that mirrors SwiftUI's Image modifiers, interacting with your model feels natural and intuitive. For instance, the `.resizable()` modifier scales your model to occupy the entire container space.
 
 ## 🔍 Technical Details
 * File Support: Currently, only the STL and OBJ file formats are supported.
-* Camera Details: An orthographic camera is used, calibrated to the view size and coordinated like its SwiftUI counterpart.
+* Camera Details: An orthographic camera is calibrated to the view size and coordinated like its SwiftUI counterpart.
 * Mesh Information: The library leans on ModelIO for both model loading and generation.
-* Rendering: Rendering prowess is derived from MetalKit.
+* Rendering: Rendering is based on Metal with MetalKit.
 
 ## 🚧 Work in Progress (Ordered by Priority)
 - [ ] ~Scene background customization.~ (Just use `.background` of the View)
@@ -29,7 +29,7 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 - [X] Modifiers: `frame` and `padding`.
 - [ ] Materials composition
 - [ ] More materials support
-- [ ] Animations support
+- [ ] Animations support (Currently supported using Animatable modifier on the parent View)
 - [ ] Multiple Meshes support
 - [ ] Bloom effect support
 
