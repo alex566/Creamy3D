@@ -1,6 +1,6 @@
 //
 //  Mesh.swift
-//  MilkWaves
+// 
 //
 //  Created by Alexey Oleynik on 29.09.23.
 //
@@ -26,16 +26,16 @@ public struct Mesh: Object {
     }
     
     let source: Source
-    let material: any MeshMaterial
+    let materials: [any MeshMaterial]
     let options: Options
     
     public init(
         source: Source,
-        @MeshMaterialBuilder makeMaterial: () -> some MeshMaterial
+        @MeshMaterialBuilder makeMaterials: () -> [any MeshMaterial]
     ) {
         self.init(
             source: source,
-            material: makeMaterial(),
+            materials: makeMaterials(),
             options: .init(
                 isResizable: false,
                 aspectRatio: nil, 
@@ -49,12 +49,12 @@ public struct Mesh: Object {
     
     internal init(
         source: Source,
-        material: some MeshMaterial,
+        materials: [any MeshMaterial],
         options: Options
     ) {
         self.source = source
         self.options = options
-        self.material = material
+        self.materials = materials
     }
     
     internal var id: String {
@@ -78,7 +78,7 @@ public extension Mesh {
         options.isResizable = true
         return .init(
             source: source,
-            material: material, 
+            materials: materials,
             options: options
         )
     }
@@ -88,7 +88,7 @@ public extension Mesh {
         options.aspectRatio = (aspectRatio, contentMode)
         return .init(
             source: source,
-            material: material, 
+            materials: materials,
             options: options
         )
     }
@@ -111,7 +111,7 @@ public extension Mesh {
         options.offset = offset
         return .init(
             source: source,
-            material: material, 
+            materials: materials,
             options: options
         )
     }
@@ -132,7 +132,7 @@ public extension Mesh {
         options.rotation = (angle, .init(axis.x, axis.y, axis.z))
         return .init(
             source: source,
-            material: material,
+            materials: materials,
             options: options
         )
     }
@@ -148,7 +148,7 @@ public extension Mesh {
         options.frame = (width, height)
         return .init(
             source: source,
-            material: material,
+            materials: materials,
             options: options
         )
     }
@@ -166,13 +166,18 @@ public extension Mesh {
         options.insets = insets
         return .init(
             source: source,
-            material: material,
+            materials: materials,
             options: options
         )
     }
     
     func padding(_ edges: Edge.Set = .all, _ length: CGFloat = 16.0) -> Mesh {
         padding(insets(edges: edges, length: length))
+    }
+    
+    @inlinable
+    func padding(_ length: CGFloat = 16.0) -> Mesh {
+        padding(.all, length)
     }
     
     private func insets(edges: Edge.Set, length: CGFloat) -> EdgeInsets {
@@ -182,5 +187,34 @@ public extension Mesh {
             bottom: edges.contains(.bottom) ? length : 0.0,
             trailing: edges.contains(.trailing) ? length : 0.0
         )
+    }
+}
+
+extension Mesh {
+    
+    func loader() -> any MeshLoader {
+        switch source {
+        case .sphere:
+            return SphereMeshLoader(
+                radii: .one,
+                radialSegments: 100,
+                verticalSegments: 100
+            )
+        case .cube:
+            return CubeMeshLoader(
+                dimensions: .one,
+                segments: .one
+            )
+        case .obj(let name):
+            return ModelMeshLoader(
+                name: name,
+                ext: "obj"
+            )
+        case .stl(let name):
+            return ModelMeshLoader(
+                name: name,
+                ext: "stl"
+            )
+        }
     }
 }

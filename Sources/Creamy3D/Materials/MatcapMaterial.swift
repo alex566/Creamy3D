@@ -13,4 +13,8 @@ public struct MatcapMaterial: MeshMaterial {
     public init(name: String) {
         self.name = name
     }
+    
+    public func makeFunction() -> MaterialFunction {
+        MatcapMaterialFunction(textureName: name)
+    }
 }

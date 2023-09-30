@@ -63,31 +63,3 @@ extension MeshLoader {
     }
 }
 
-extension Mesh.Source {
-    
-    func loader() -> any MeshLoader {
-        switch self {
-        case .sphere:
-            return SphereMeshLoader(
-                radii: .one,
-                radialSegments: 100,
-                verticalSegments: 100
-            )
-        case .cube:
-            return CubeMeshLoader(
-                dimensions: .one,
-                segments: .one
-            )
-        case .obj(let name):
-            return ModelMeshLoader(
-                name: name,
-                ext: "obj"
-            )
-        case .stl(let name):
-            return ModelMeshLoader(
-                name: name,
-                ext: "stl"
-            )
-        }
-    }
-}

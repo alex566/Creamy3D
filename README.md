@@ -27,9 +27,10 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 - [ ] ~Scene background customization.~ (Just use `.background` of the View)
 - [X] Modifiers: `offset`, `rotationEffect`, `rotation3DEffect`.
 - [X] Modifiers: `frame` and `padding`.
-- [ ] Materials composition
-- [ ] More materials support
-- [ ] Animations support (Currently supported using Animatable modifier on the parent View)
+- [X] Materials composition
+- [ ] Add materials: `fresnel`, `texture`
+- [ ] Blend modes: `multiply`, `screen`, `overlay`
+- [ ] Animations support out of the box (Currently supported using Animatable modifier on the parent View)
 - [ ] Multiple Meshes support
 - [ ] Bloom effect support
 

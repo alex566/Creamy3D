@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "Creamy3D",
-    platforms: [.iOS(.v15), .macOS(.v13)],
+    platforms: [.iOS(.v16), .macOS(.v13)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
@@ -17,7 +17,7 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "Creamy3D",
-            resources: [.process("Shaders/common.metal")]
+            resources: [.process("Shaders/")]
         ),
         .testTarget(
             name: "Creamy3DTests",

@@ -34,16 +34,17 @@ extension MeshNode: Renderable {
         device: MTLDevice,
         library: MTLLibrary
     ) throws {
-        let loader = mesh.source.loader()
+        let loader = mesh.loader()
         self.mesh = try loader.load(device: device, allocator: allocator)
         
-        if let material = mesh.material as? MatcapMaterial {
-            let state = MaterialState(device: device, library: library)
-            try state.setup(meshMaterial: material, textureLoader: textureLoader)
-            self.materialState = state
-        } else {
-            fatalError("Unknown material")
-        }
+        let state = MaterialState()
+        try state.setup(
+            materials: mesh.materials,
+            device: device,
+            library: library,
+            textureLoader: textureLoader
+        )
+        self.materialState = state
     }
     
     func update(

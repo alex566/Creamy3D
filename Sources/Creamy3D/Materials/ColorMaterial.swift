@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ColorMaterial.swift
 //  
 //
 //  Created by Alexey Oleynik on 29.09.23.
@@ -12,5 +12,9 @@ public struct ColorMaterial: MeshMaterial {
     
     public init(color: ColorRGB) {
         self.color = color
+    }
+    
+    public func makeFunction() -> MaterialFunction {
+        ColorMaterialFunction(color: color.SRGBToLinear().simd)
     }
 }

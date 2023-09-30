@@ -11,14 +11,18 @@ public struct ColorRGB {
     let r: Double
     let g: Double
     let b: Double
-    let a: Double
+    
+    public init(r: Double, g: Double, b: Double) {
+        self.r = r
+        self.g = g
+        self.b = b
+    }
     
     public func linearToSRGB() -> Self {
         .init(
             r: linearToSRGB(r),
             g: linearToSRGB(g),
-            b: linearToSRGB(b),
-            a: 1.0
+            b: linearToSRGB(b)
         )
     }
     
@@ -26,19 +30,24 @@ public struct ColorRGB {
         .init(
             r: sRGBToLinear(r),
             g: sRGBToLinear(g),
-            b: sRGBToLinear(b),
-            a: 1.0
+            b: sRGBToLinear(b)
         )
     }
     
     // MARK: - Factories
     
     public static var black: Self {
-        .init(r: 0.0, g: 0.0, b: 0.0, a: 1.0)
+        .init(r: 0.0, g: 0.0, b: 0.0)
     }
     
     public static var white: Self {
-        .init(r: 1.0, g: 1.0, b: 1.0, a: 1.0)
+        .init(r: 1.0, g: 1.0, b: 1.0)
+    }
+    
+    // MARK: - Internal
+    
+    var simd: SIMD3<Float> {
+        .init(Float(r), Float(g), Float(b))
     }
     
     // MARK: - Utils
