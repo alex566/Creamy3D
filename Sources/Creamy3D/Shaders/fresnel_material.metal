@@ -31,6 +31,6 @@ float4 fresnel_material(VertexOut inFrag, device FresnelMaterialArgument *data) 
     float3 f0 = float3(0.04, 0.04, 0.04);
     float3 fresnelColor = data->color;
     float cosPhi = dot(N, V);
-    float3 color = float4(fresnelColor, FresnelTerm(cosPhi, f0, data->intensity));
-    return float4(color, 1.f);
+    float4 color = float4(fresnelColor, FresnelTerm(cosPhi, f0, data->intensity));
+    return color;
 }
