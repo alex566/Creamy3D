@@ -92,7 +92,7 @@ fragment float4 fragment_common(VertexOut inFrag [[stage_in]],
         device void *resource = ((device char *)resources + resourcesStride * material.resourceIndex);
         
         [[function_groups("material")]] float4 materialColor = materialFunction(inFrag, resource);
-        materialColor.a = material.alpha;
+        materialColor.a *= material.alpha;
         
         switch (material.blend) {
             case 0:
