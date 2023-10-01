@@ -14,6 +14,9 @@ CreamyView {
 }
 ```
 
+## 🎞 Video example
+![ezgif com-video-to-gif](https://github.com/alex566/Creamy3D/assets/7542506/dcf7f426-81b1-460f-b8ef-f94d4b2e0a60)
+
 ## 🛠️ How to Use
 To infuse a model into your scene, simply start with CreamyView. This view adopts the size of its parent container and expects a model builder as an input argument. With a design principle that mirrors SwiftUI's Image modifiers, interacting with your model feels natural and intuitive. For instance, the `.resizable()` modifier scales your model to occupy the entire container space.
 
