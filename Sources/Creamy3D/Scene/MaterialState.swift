@@ -12,7 +12,7 @@ enum MaterialError: Error {
     case failedToLoadTexture
 }
 
-struct ShaderMaterial {
+private struct ShaderMaterial {
     var functionIndex: Int32
     var resourceIndex: Int32
     var blend: Int32

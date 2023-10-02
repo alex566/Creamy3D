@@ -27,7 +27,7 @@ public struct Mesh: Object {
     
     let source: Source
     let materials: [any MeshMaterial]
-    let options: Options
+    var options: Options
     
     public init(
         source: Source,

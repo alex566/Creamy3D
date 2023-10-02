@@ -9,7 +9,7 @@ import SwiftUI
 import simd
 
 public struct CreamyView<RootObject: Object>: View {
-    let rootObject: RootObject
+    var rootObject: RootObject
     
     public init(@ObjectBuilder makeScene: () -> RootObject) {
         self.rootObject = makeScene()
@@ -28,5 +28,13 @@ public struct CreamyView<RootObject: Object>: View {
                 objects: [rootObject]
             )
         }
+    }
+}
+
+extension CreamyView: Animatable where RootObject: VectorArithmetic {
+    
+    public var animatableData: RootObject {
+        get { rootObject }
+        set { rootObject = newValue }
     }
 }
