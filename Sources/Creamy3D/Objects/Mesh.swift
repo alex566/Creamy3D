@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct Mesh: Object {
+public struct Mesh: Object, VectorArithmetic {
     
     public enum Source {
         case sphere

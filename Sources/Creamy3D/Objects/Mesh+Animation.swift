@@ -8,7 +8,7 @@
 import SwiftUI
 import simd
 
-extension Mesh: VectorArithmetic {
+extension Mesh {
     
     public var magnitudeSquared: Double {
         options.magnitudeSquared
