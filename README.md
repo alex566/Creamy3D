@@ -66,7 +66,7 @@ The most common post-processing effects are planned, but the list is not full.
 | ...             | todo         |
 
 
-## 🚧 Work in Progress (Ordered by Priority)
+## 🚧 Work in Progress - v0.3 (Ordered by Priority)
 - [ ] ~Scene background customization.~ (Just use `.background` of the View)
 - [X] Modifiers: `offset`, `rotationEffect`, `rotation3DEffect`.
 - [X] Modifiers: `frame` and `padding`.
