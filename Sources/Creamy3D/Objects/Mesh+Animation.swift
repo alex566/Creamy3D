@@ -14,23 +14,23 @@ extension Mesh {
         options.magnitudeSquared
     }
     
-    public static var zero: Mesh {
-        return Mesh(source: .sphere, materials: [], options: .zero)
+    public static var zero: Self {
+        .init(source: .sphere, materials: [], options: .zero)
     }
 
-    public static func += (lhs: inout Mesh, rhs: Mesh) {
+    public static func += (lhs: inout Self, rhs: Self) {
         lhs.options += rhs.options
     }
 
-    public static func -= (lhs: inout Mesh, rhs: Mesh) {
+    public static func -= (lhs: inout Self, rhs: Self) {
         lhs.options -= rhs.options
     }
 
-    public static func + (lhs: Mesh, rhs: Mesh) -> Mesh {
+    public static func + (lhs: Self, rhs: Self) -> Self {
         Mesh(source: lhs.source, materials: lhs.materials, options: lhs.options + rhs.options)
     }
 
-    public static func - (lhs: Mesh, rhs: Mesh) -> Mesh {
+    public static func - (lhs: Self, rhs: Self) -> Self {
         Mesh(source: lhs.source, materials: lhs.materials, options: lhs.options - rhs.options)
     }
 
@@ -38,7 +38,7 @@ extension Mesh {
         options.scale(by: rhs)
     }
     
-    public static func == (lhs: Mesh, rhs: Mesh) -> Bool {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id && lhs.options == rhs.options
     }
 }
