@@ -146,6 +146,7 @@ extension Renderer: MTKViewDelegate {
             return
         }
         encoder.setCullMode(.back)
+        encoder.setFrontFacing(.counterClockwise)
         
         meshes.values.forEach { mesh in
             mesh.render(encoder: encoder,
