@@ -26,6 +26,40 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 * Mesh Information: The library leans on ModelIO for both model loading and generation.
 * Rendering: Rendering is based on Metal with MetalKit.
 
+## 📜 Planned features
+
+| Materials  | Status            |
+|------------|-------------------|
+| Color      | ✅ done           |
+| Matcap     | ✅ done           |
+| Fresnel    | 🟡 partially done |
+| Texture    | ⚙ in progress     |
+| Light      | ⚙ in progress     |
+| Normal     | todo              |
+| Depth      | todo              |
+| Gradient   | todo              |
+| Noise      | todo              |
+| Rainbow    | todo              |
+| Outline    | todo              |
+| Glass      | todo              |
+| Pattern    | todo              |
+
+| Meshes     | Status            |
+|------------|-------------------|
+| Sphere     | ✅ done           |
+| Cube       | ✅ done           |
+| Model      | 🟡 partially done |
+| Plane      | todo              |
+| Cylinder   | todo              |
+| Cone       | todo              |
+| ...        | todo              |
+
+| Post processing | Status       |
+|-----------------|--------------|
+| Bloom           | todo         |
+| Aberration      | todo         |
+
+
 ## 🚧 Work in Progress (Ordered by Priority)
 - [ ] ~Scene background customization.~ (Just use `.background` of the View)
 - [X] Modifiers: `offset`, `rotationEffect`, `rotation3DEffect`.
@@ -33,6 +67,7 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 - [X] Materials composition
 - [ ] Add materials: `fresnel`, `texture`
 - [ ] Blend modes: `multiply`, `screen`, `overlay`
+- [ ] Add `light` material
 - [ ] Animations support out of the box (Currently supported using Animatable modifier on the parent View)
 - [ ] Multiple Meshes support
 - [ ] Bloom effect support
