@@ -27,6 +27,7 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 * Rendering: Rendering is based on Metal with MetalKit.
 
 ## 📜 Planned features
+The material system is inspired by spline.design, so the goal is to make any visual appearance reproducible by the library.
 
 | Materials  | Status            |
 |------------|-------------------|
@@ -44,6 +45,8 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 | Glass      | todo              |
 | Pattern    | todo              |
 
+All primitive shapes are planned to be generatable out of the box. The way how to handle Models from files is still under consideration. Procedural generation of meshes is in the distant future plans.
+
 | Meshes     | Status            |
 |------------|-------------------|
 | Sphere     | ✅ done           |
@@ -54,10 +57,13 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 | Cone       | todo              |
 | ...        | todo              |
 
+The most common post-processing effects are planned, but the list is not full.
+
 | Post processing | Status       |
 |-----------------|--------------|
 | Bloom           | todo         |
 | Aberration      | todo         |
+| ...             | todo         |
 
 
 ## 🚧 Work in Progress (Ordered by Priority)
