@@ -15,6 +15,7 @@ using namespace metal;
 struct FresnelMaterialArgument {
     float3 color;
     float intensity;
+    float scale;
 };
 
 float FresnelTerm(float cosTheta, float3 f0, float fresnelPower) {
@@ -31,5 +32,5 @@ float4 fresnel_material(VertexOut inFrag, device FresnelMaterialArgument *data) 
     float3 f0 = 0.04;
     float3 fresnelColor = data->color;
     float cosPhi = dot(N, V);
-    return float4(fresnelColor, FresnelTerm(cosPhi, f0, data->intensity));
+    return float4(fresnelColor, FresnelTerm(cosPhi, f0, data->intensity) * data->scale);
 }
