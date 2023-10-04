@@ -45,18 +45,25 @@ extension MeshLoader {
             offset: MemoryLayout<SIMD4<Float>>.stride,
             bufferIndex: 0
         )
+        
+        mdlVertexDescriptor.attributes[2] = MDLVertexAttribute(
+            name: MDLVertexAttributeTangent,
+            format: .float3,
+            offset: MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride,
+            bufferIndex: 0
+        )
 
         // UV attribute
-        mdlVertexDescriptor.attributes[2] = MDLVertexAttribute(
+        mdlVertexDescriptor.attributes[3] = MDLVertexAttribute(
             name: MDLVertexAttributeTextureCoordinate,
             format: .float2,
-            offset: MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride,
+            offset: MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride * 2,
             bufferIndex: 0
         )
 
         // Create a single interleaved buffer layout
         mdlVertexDescriptor.layouts[0] = MDLVertexBufferLayout(
-            stride: MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD2<Float>>.stride
+            stride: MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride * 2 + MemoryLayout<SIMD2<Float>>.stride
         )
 
         return mdlVertexDescriptor

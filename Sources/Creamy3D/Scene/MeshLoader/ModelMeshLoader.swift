@@ -25,6 +25,11 @@ struct ModelMeshLoader: MeshLoader {
             throw MeshLoadingError.incorrectStructure
         }
         mesh.vertexDescriptor = makeVertexDescriptor()
+        mesh.addOrthTanBasis(
+            forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
+            normalAttributeNamed: MDLVertexAttributeNormal,
+            tangentAttributeNamed: MDLVertexAttributeTangent
+        )
         
         do {
             return .init(

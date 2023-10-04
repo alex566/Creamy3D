@@ -145,13 +145,18 @@ final class MaterialState {
         vertexDescriptor.attributes[1].offset = MemoryLayout<SIMD4<Float>>.stride
         vertexDescriptor.attributes[1].bufferIndex = 0
         
-        // UV attribute
-        vertexDescriptor.attributes[2].format = .float2
+        // Tangent attribute
+        vertexDescriptor.attributes[2].format = .float3
         vertexDescriptor.attributes[2].offset = MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride
         vertexDescriptor.attributes[2].bufferIndex = 0
+        
+        // UV attribute
+        vertexDescriptor.attributes[3].format = .float2
+        vertexDescriptor.attributes[3].offset = MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride * 2
+        vertexDescriptor.attributes[3].bufferIndex = 0
 
         // Create a single interleaved layout
-        vertexDescriptor.layouts[0].stride = MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride + MemoryLayout<SIMD2<Float>>.stride
+        vertexDescriptor.layouts[0].stride = MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride * 2 + MemoryLayout<SIMD2<Float>>.stride
         vertexDescriptor.layouts[0].stepRate = 1
         vertexDescriptor.layouts[0].stepFunction = .perVertex
         return vertexDescriptor

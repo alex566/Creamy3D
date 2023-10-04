@@ -15,7 +15,8 @@ using namespace metal;
 struct Vertex {
      float4 position [[attribute(0)]];
      float3 normal [[attribute(1)]];
-     float2 uv [[attribute(2)]];
+     float3 tangent  [[attribute(2)]]; 
+     float2 uv [[attribute(3)]];
 };
 
 struct Uniforms {
@@ -36,6 +37,7 @@ vertex VertexOut vertex_common(Vertex in [[stage_in]], constant Uniforms &unifor
     out.position = uniforms.MVP * pos;
     out.normal = normalize(uniforms.normalMatrix * adjustedNormal);
     out.vNormal = normalize(uniforms.view * float4(uniforms.normalMatrix * adjustedNormal, 0.f)).xyz;
+    out.vTangent = (uniforms.view * float4(uniforms.normalMatrix * in.tangent, 0.f)).xyz;
     out.worldPos = (uniforms.model * pos).xyz;
     return out;
 }
