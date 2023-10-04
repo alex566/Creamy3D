@@ -45,7 +45,8 @@ The material system is inspired by spline.design, so the goal is to make any vis
 | Glass      | todo              |
 | Pattern    | todo              |
 
-All primitive shapes are planned to be generatable out of the box. The way how to handle Models from files is still under consideration. Procedural generation of meshes is in the distant future plans.
+The library provides some basic primitive shapes, but making the shape generation more advanced is not planned so far. 
+The main focus will be on rendering models from files.
 
 | Meshes     | Status            |
 |------------|-------------------|
@@ -57,7 +58,7 @@ All primitive shapes are planned to be generatable out of the box. The way how t
 | Cone       | todo              |
 | ...        | todo              |
 
-The most common post-processing effects are planned, but the list is not full.
+The most common post-processing effects are planned. The list is not full yet.
 
 | Post processing | Status       |
 |-----------------|--------------|
@@ -68,23 +69,35 @@ The most common post-processing effects are planned, but the list is not full.
 
 ## 🚧 Work in Progress - v0.3 (Ordered by Priority)
 - [ ] ~Scene background customization.~ (Just use `.background` of the View)
-- [X] Modifiers: `offset`, `rotationEffect`, `rotation3DEffect`.
+- [X] Modifiers: `offset`, `rotation`.
 - [X] Modifiers: `frame` and `padding`.
 - [X] Materials composition
 - [ ] Add materials: `fresnel`, `texture`
-- [ ] Blend modes: `multiply`, `screen`, `overlay`
+- [X] Blend modes: `multiply`, `screen`, `overlay`
 - [ ] Add `light` material
 - [ ] Animations support out of the box (Currently supported using Animatable modifier on the parent View)
 - [ ] Multiple Meshes support
 - [ ] Bloom effect support
 
 ## 🤔 Features under Consideration
-* MetalFX upscale for performance optimization
 * Clonner, which repeats Meshes. Example:
 ```Swift
 Clonner(.grid(.init(x: 10, y: 10, z: 10)), spacing: 16.0) {
     Mesh(source: .sphere)
         .resizable()
         .frame(width: 50.0, height: 50.0)
+}
+```
+
+* Animated material transitions. The interface is under consideration. One option is:
+```Swift
+Mesh(source: .sphere) {
+    Transition(.fade, value: isSwitched) { value in
+        if value {
+            ColorMaterial(color: .red)
+        } else {
+            ColorMaterial(black: .black)
+        }
+    }
 }
 ```

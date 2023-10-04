@@ -16,11 +16,11 @@ struct FresnelMaterialArgument {
     float3 color;
     float intensity;
     float scale;
+    float bias;
 };
 
 float FresnelTerm(float cosTheta, float3 f0, float fresnelPower) {
-    float schlickTerm = dot(f0, pow(1.0 - cosTheta, fresnelPower));
-    return schlickTerm;
+    return dot(f0, pow(1.0 - cosTheta, fresnelPower));
 }
 
 [[visible]]
@@ -32,5 +32,6 @@ float4 fresnel_material(VertexOut inFrag, device FresnelMaterialArgument *data) 
     float3 f0 = 0.04;
     float3 fresnelColor = data->color;
     float cosPhi = dot(N, V);
-    return float4(fresnelColor, FresnelTerm(cosPhi, f0, data->intensity) * data->scale);
+    float term = FresnelTerm(cosPhi, f0, data->intensity);
+    return float4(fresnelColor, (data->bias + (1.f - data->bias) * term) * data->scale);
 }

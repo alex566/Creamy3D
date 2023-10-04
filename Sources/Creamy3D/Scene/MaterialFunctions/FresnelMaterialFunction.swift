@@ -12,17 +12,20 @@ private struct FresnelMaterialArguments {
     var color: SIMD3<Float>
     var intensity: Float
     var scale: Float
+    var bias: Float
 }
 
 final class FresnelMaterialFunction: MaterialFunction {
     let color: SIMD3<Float>
     let intensity: CGFloat
     let scale: CGFloat
+    let bias: CGFloat
     
-    init(color: SIMD3<Float>, scale: CGFloat, intensity: CGFloat) {
+    init(color: SIMD3<Float>, bias: CGFloat, scale: CGFloat, intensity: CGFloat) {
         self.color = color
         self.scale = scale
         self.intensity = intensity
+        self.bias = bias
     }
     
     var functionName: String {
@@ -41,6 +44,7 @@ final class FresnelMaterialFunction: MaterialFunction {
         binded.pointee.intensity = Float(intensity)
         binded.pointee.color = color
         binded.pointee.scale = Float(scale)
+        binded.pointee.bias = Float(bias)
     }
     
     func useResources(encoder: MTLRenderCommandEncoder) {

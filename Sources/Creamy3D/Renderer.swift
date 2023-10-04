@@ -64,7 +64,6 @@ final class Renderer: NSObject, ObservableObject {
         view.device = device
         view.colorPixelFormat = .bgra8Unorm_srgb
         view.framebufferOnly = true
-        view.drawableSize = view.bounds.size
         view.clearDepth = 1.0
         view.clearColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         view.depthStencilPixelFormat = .depth32Float

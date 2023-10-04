@@ -18,19 +18,25 @@ public struct ColorRGB {
         self.b = b
     }
     
+    public init(grayscale: Double) {
+        self.r = grayscale
+        self.g = grayscale
+        self.b = grayscale
+    }
+    
     public func linearToSRGB() -> Self {
         .init(
-            r: linearToSRGB(r),
-            g: linearToSRGB(g),
-            b: linearToSRGB(b)
+            r: Self.linearToSRGB(r),
+            g: Self.linearToSRGB(g),
+            b: Self.linearToSRGB(b)
         )
     }
     
     public func SRGBToLinear() -> Self {
         .init(
-            r: sRGBToLinear(r),
-            g: sRGBToLinear(g),
-            b: sRGBToLinear(b)
+            r: Self.sRGBToLinear(r),
+            g: Self.sRGBToLinear(g),
+            b: Self.sRGBToLinear(b)
         )
     }
     
@@ -52,7 +58,7 @@ public struct ColorRGB {
     
     // MARK: - Utils
     
-    private func linearToSRGB(_ linearValue: Double) -> Double {
+    public static func linearToSRGB(_ linearValue: Double) -> Double {
         if linearValue <= 0.0031308 {
             return 12.92 * linearValue
         } else {
@@ -60,7 +66,7 @@ public struct ColorRGB {
         }
     }
 
-    private func sRGBToLinear(_ sRGBValue: Double) -> Double {
+    public static func sRGBToLinear(_ sRGBValue: Double) -> Double {
         if sRGBValue <= 0.04045 {
             return sRGBValue / 12.92
         } else {
