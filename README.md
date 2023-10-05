@@ -29,21 +29,21 @@ To infuse a model into your scene, simply start with CreamyView. This view adopt
 ## 📜 Planned features
 The material system is inspired by spline.design, so the goal is to make any visual appearance reproducible by the library.
 
-| Materials  | Status            |
-|------------|-------------------|
-| Color      | ✅ done           |
-| Matcap     | ✅ done           |
-| Fresnel    | 🟡 partially done |
-| Texture    | ⚙ in progress     |
-| Light      | ⚙ in progress     |
-| Normal     | todo              |
-| Depth      | todo              |
-| Gradient   | todo              |
-| Noise      | todo              |
-| Rainbow    | todo              |
-| Outline    | todo              |
-| Glass      | todo              |
-| Pattern    | todo              |
+| Materials  | Status            | Comment                                                                    |
+|------------|-------------------|----------------------------------------------------------------------------|
+| Color      | ✅ done           |                                                                            |
+| Matcap     | ✅ done           |                                                                            |
+| Fresnel    | 🟡 partially done | `Factor` is missing. The result doesn't match precisely with spline.design |
+| Texture    | 🟡 partially done | Currently only samples based on UV                                         |
+| Light      | ⚙ in progress     |                                                                            |
+| Normal     | todo              |                                                                            |
+| Depth      | todo              |                                                                            |
+| Gradient   | todo              |                                                                            |
+| Noise      | todo              |                                                                            |
+| Rainbow    | todo              |                                                                            |
+| Outline    | todo              |                                                                            |
+| Glass      | todo              |                                                                            |
+| Pattern    | todo              |                                                                            |
 
 The library provides some basic primitive shapes, but making the shape generation more advanced is not planned so far. 
 The main focus will be on rendering models from files.
@@ -72,7 +72,7 @@ The most common post-processing effects are planned. The list is not full yet.
 - [X] Modifiers: `offset`, `rotation`.
 - [X] Modifiers: `frame` and `padding`.
 - [X] Materials composition
-- [ ] Add materials: `fresnel`, `texture`
+- [X] Add materials: `fresnel`, `texture`
 - [X] Blend modes: `multiply`, `screen`, `overlay`
 - [ ] Add `light` material
 - [ ] Animations support out of the box (Currently supported using Animatable modifier on the parent View)
