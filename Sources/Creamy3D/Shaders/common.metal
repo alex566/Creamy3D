@@ -36,9 +36,11 @@ vertex VertexOut vertex_common(Vertex in [[stage_in]], constant Uniforms &unifor
     VertexOut out;
     out.position = uniforms.MVP * pos;
     out.normal = normalize(uniforms.normalMatrix * adjustedNormal);
+    out.tangent = normalize(uniforms.normalMatrix * in.tangent);
     out.vNormal = normalize(uniforms.view * float4(uniforms.normalMatrix * adjustedNormal, 0.f)).xyz;
     out.vTangent = (uniforms.view * float4(uniforms.normalMatrix * in.tangent, 0.f)).xyz;
     out.worldPos = (uniforms.model * pos).xyz;
+    out.uv = in.uv;
     return out;
 }
 

@@ -8,9 +8,11 @@
 #pragma once
 
 struct VertexOut {
-     float4 position [[position]];
-     float3 normal;
-     float3 vNormal;
-     float3 vTangent;
-     float3 worldPos;
+    float4 position [[position]];
+    float3 normal;
+    float3 tangent;
+    float3 vNormal;
+    float3 vTangent;
+    float3 worldPos;
+    float2 uv;
 };

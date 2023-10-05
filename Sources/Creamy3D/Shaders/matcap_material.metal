@@ -18,7 +18,7 @@ struct MatcapMaterialArgument {
 
 [[visible]]
 float4 matcap_material(VertexOut inFrag, device MatcapMaterialArgument *data) {
-    constexpr sampler smp(mag_filter::linear, min_filter::linear, mip_filter::linear, address::clamp_to_edge);
+    constexpr sampler smp(mag_filter::bicubic, min_filter::bicubic);
     
     float3 bitangent = cross(inFrag.vNormal, inFrag.vTangent);
     float3x3 TBN = float3x3(inFrag.vTangent, bitangent, inFrag.vNormal);
