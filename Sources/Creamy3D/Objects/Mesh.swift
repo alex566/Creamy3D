@@ -12,8 +12,8 @@ public struct Mesh: Object {
     public enum Source {
         case sphere
         case cube
-        case obj(String)
-        case stl(String)
+        case obj(String, shouldGenerateNormals: Bool)
+        case stl(String, shouldGenerateNormals: Bool)
     }
     
     internal struct Options {
@@ -63,9 +63,9 @@ public struct Mesh: Object {
             return "sphere"
         case .cube:
             return "cube"
-        case .obj(let name):
+        case .obj(let name, _):
             return "obj_\(name)"
-        case .stl(let name):
+        case .stl(let name, _):
             return "stl_\(name)"
         }
     }
@@ -205,15 +205,17 @@ extension Mesh {
                 dimensions: .one,
                 segments: .one
             )
-        case .obj(let name):
+        case let .obj(name, shouldGenerateNormals):
             return ModelMeshLoader(
                 name: name,
-                ext: "obj"
+                ext: "obj",
+                shouldGenerateNormals: shouldGenerateNormals
             )
-        case .stl(let name):
+        case let .stl(name, shouldGenerateNormals):
             return ModelMeshLoader(
                 name: name,
-                ext: "stl"
+                ext: "stl",
+                shouldGenerateNormals: shouldGenerateNormals
             )
         }
     }

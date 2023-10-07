@@ -11,6 +11,7 @@ import ModelIO
 struct ModelMeshLoader: MeshLoader {
     let name: String
     let ext: String
+    let shouldGenerateNormals: Bool
     
     func load(device: MTLDevice, allocator: MTKMeshBufferAllocator) throws -> LoadedMesh {
         guard let url = Bundle.main.url(forResource: name, withExtension: ext) else {
@@ -25,6 +26,11 @@ struct ModelMeshLoader: MeshLoader {
             throw MeshLoadingError.incorrectStructure
         }
         mesh.vertexDescriptor = makeVertexDescriptor()
+        
+        if shouldGenerateNormals {
+            mesh.addNormals(withAttributeNamed: MDLVertexAttributeNormal, creaseThreshold: 0.01)
+        }
+        
         mesh.addOrthTanBasis(
             forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
             normalAttributeNamed: MDLVertexAttributeNormal,
