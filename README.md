@@ -67,7 +67,7 @@ The most common post-processing effects are planned. The list is not full yet.
 | ...             | todo         |
 
 
-## 🚧 Plans for v0.3 - Provide convenient way to render materials
+## 🚧 Plans for v0.3 - Provide convenient way to combine materials
 - [ ] ~Scene background customization.~ (Just use `.background` of the View)
 - [X] Modifiers: `offset`, `rotation`.
 - [X] Modifiers: `frame` and `padding`.
@@ -81,7 +81,7 @@ The most common post-processing effects are planned. The list is not full yet.
 
 ## 🚧 Plans for v0.4 - Rework objects management
 - [ ] Split Mesh into separate types, like "Sphere(), Cube(), Model()"
-- [ ] - [ ] Add ability to apply separate materials to submeshes
+- [ ] Add ability to apply separate materials to submeshes
 - [ ] Add Scene type which can handle adding USD
 ```Swift
 CreamyView {
