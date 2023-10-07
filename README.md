@@ -67,7 +67,7 @@ The most common post-processing effects are planned. The list is not full yet.
 | ...             | todo         |
 
 
-## 🚧 Work in Progress - v0.3 (Ordered by Priority)
+## 🚧 Plans for v0.3 - Provide convenient way to render materials
 - [ ] ~Scene background customization.~ (Just use `.background` of the View)
 - [X] Modifiers: `offset`, `rotation`.
 - [X] Modifiers: `frame` and `padding`.
@@ -78,6 +78,26 @@ The most common post-processing effects are planned. The list is not full yet.
 - [ ] Animations support out of the box (Currently supported using Animatable modifier on the parent View)
 - [ ] Multiple Meshes support
 - [ ] Bloom effect support
+
+## 🚧 Plans for v0.4 - Rework objects management
+- [ ] Split Mesh into separate types, like "Sphere(), Cube(), Model()"
+- [ ] - [ ] Add ability to apply separate materials to submeshes
+- [ ] Add Scene type which can handle adding USD
+```Swift
+CreamyView {
+    Scene(name: "my_scene.usdz") {
+        Object(name: "my object") { // Define materials for the object named "my object"
+            ColorMaterial(color: .white)
+            LightMaterial(type: .physical) {
+                DirectionalLight(direction: .init(x: 1.0, y: 1.0, z: 0.0))
+            }
+        }
+    }
+}
+```
+
+## 🚧 Plans for v0.5 - Advanced animations
+- [ ] Material transition animations
 
 ## 🤔 Features under Consideration
 * Clonner, which repeats Meshes. Example:
