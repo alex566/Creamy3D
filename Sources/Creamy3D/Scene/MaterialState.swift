@@ -69,6 +69,7 @@ final class MaterialState {
         pipelineDescriptor.vertexDescriptor = makeVertexDescriptor()
         pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm_srgb
         pipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
+        pipelineDescriptor.rasterSampleCount = 4
 
         pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
         pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
