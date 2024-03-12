@@ -68,7 +68,7 @@ final class Renderer: NSObject, ObservableObject {
         view.clearColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         view.depthStencilPixelFormat = .depth32Float
         view.backgroundColor = .clear
-        view.drawableSize = CGSize(width: view.frame.width * 2.0, height: view.frame.height * 2.0)
+        view.drawableSize = CGSize(width: view.frame.width * 3.0, height: view.frame.height * 3.0)
     }
     
     func update(camera: Camera, projection: Projection) {
