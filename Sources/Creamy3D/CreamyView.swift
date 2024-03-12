@@ -18,8 +18,8 @@ public struct CreamyView<RootObject: Object>: View {
     public var body: some View {
         GeometryReader { proxy in
             MetalView(
-                projection: .init(width: proxy.size.width,
-                                  height: proxy.size.height,
+                projection: .init(width: proxy.size.width * 2.0,
+                                  height: proxy.size.height * 2.0,
                                   nearZ: 0.001,
                                   farZ: .greatestFiniteMagnitude),
                 camera: .init(position: .init(x: 0.0, y: 0.0, z: -1000.0),
