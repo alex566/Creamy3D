@@ -29,6 +29,7 @@ extension MeshNode: Renderable {
     
     func setup(
         mesh: Mesh,
+        config: Renderer.Config,
         allocator: MTKMeshBufferAllocator,
         textureLoader: MTKTextureLoader,
         device: MTLDevice,
@@ -39,7 +40,8 @@ extension MeshNode: Renderable {
         
         let state = MaterialState()
         try state.setup(
-            materials: mesh.materials,
+            materials: mesh.materials, 
+            config: config,
             device: device,
             library: library,
             textureLoader: textureLoader

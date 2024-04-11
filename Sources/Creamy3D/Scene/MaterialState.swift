@@ -31,6 +31,7 @@ final class MaterialState {
     
     func setup(
         materials: [any MeshMaterial],
+        config: Renderer.Config,
         device: MTLDevice,
         library: MTLLibrary,
         textureLoader: MTKTextureLoader
@@ -67,9 +68,9 @@ final class MaterialState {
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
         pipelineDescriptor.vertexDescriptor = makeVertexDescriptor()
-        pipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm_srgb
+        pipelineDescriptor.colorAttachments[0].pixelFormat = config.colorPixelFormat
         pipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
-        pipelineDescriptor.rasterSampleCount = 4
+        pipelineDescriptor.rasterSampleCount = config.sampleCount
 
         pipelineDescriptor.colorAttachments[0].rgbBlendOperation = .add
         pipelineDescriptor.colorAttachments[0].alphaBlendOperation = .add
@@ -79,7 +80,7 @@ final class MaterialState {
 
         pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
         pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
-        pipelineDescriptor.depthAttachmentPixelFormat = .depth32Float
+        pipelineDescriptor.depthAttachmentPixelFormat = config.depthPixelFormat
         
         let linkedFunctions = MTLLinkedFunctions()
         linkedFunctions.functions = mtlFunctions

@@ -10,7 +10,14 @@ import SwiftUI
 
 final class Renderer: NSObject, ObservableObject {
     
+    struct Config {
+        let sampleCount: Int
+        let colorPixelFormat: MTLPixelFormat
+        let depthPixelFormat: MTLPixelFormat
+    }
+    
     private static let buffersCount = 3
+    private let config: Config
     
     // MARK: Metal
     public let device: MTLDevice
@@ -48,6 +55,7 @@ final class Renderer: NSObject, ObservableObject {
             fatalError("Failed to create a command queue")
         }
         
+        self.config = Self.makeConfig(device: device)
         self.device = device
         self.library = library
         self.commandQueue = commandQueue
@@ -62,13 +70,13 @@ final class Renderer: NSObject, ObservableObject {
     func setup(view: MTKView) {
         view.delegate = self
         view.device = device
-        view.colorPixelFormat = .bgra8Unorm_srgb
+        view.colorPixelFormat = config.colorPixelFormat
         view.framebufferOnly = true
         view.clearDepth = 1.0
         view.clearColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
-        view.depthStencilPixelFormat = .depth32Float
+        view.depthStencilPixelFormat = config.depthPixelFormat
         view.backgroundColor = .clear
-        view.sampleCount = 4
+        view.sampleCount = config.sampleCount
     }
     
     func update(camera: Camera, projection: Projection) {
@@ -97,6 +105,7 @@ final class Renderer: NSObject, ObservableObject {
                 let node = MeshNode()
                 try node.setup(
                     mesh: mesh,
+                    config: config,
                     allocator: meshAllocator,
                     textureLoader: textureLoader,
                     device: device,
@@ -111,6 +120,17 @@ final class Renderer: NSObject, ObservableObject {
                 print("Failed to add mesh(\(mesh.id): \(error)")
             }
         }
+    }
+    
+    private static func makeConfig(device: some MTLDevice) -> Config {
+        let samples = [8, 4, 2]
+        let sampleCount = samples.first { device.supportsTextureSampleCount($0) } ?? 1
+        
+        return .init(
+            sampleCount: sampleCount,
+            colorPixelFormat: .bgra8Unorm_srgb,
+            depthPixelFormat: .depth32Float
+        )
     }
 }
 
