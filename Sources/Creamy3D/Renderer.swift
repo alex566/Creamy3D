@@ -84,12 +84,13 @@ final class Renderer: NSObject, ObservableObject {
         self.projectionMatrix = projection.makeMatrix()
     }
     
-    func update(objects: [any Object], projection: Projection) {
+    func update(objects: [any Object], projection: Projection, view: MTKView) {
         for object in objects {
             if let mesh = object as? Mesh {
                 self.update(mesh: mesh, projection: projection)
             }
         }
+        view.isPaused = false
     }
     
     // MARK: - Utils
@@ -186,5 +187,7 @@ extension Renderer: MTKViewDelegate {
         
         currentBuffer = (currentBuffer + 1) % Self.buffersCount
         frameIndex = (frameIndex + 1) % 64
+        
+        view.isPaused = true
     }
 }
