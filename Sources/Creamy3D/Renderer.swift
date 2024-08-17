@@ -145,11 +145,11 @@ extension Renderer: MTKViewDelegate {
     public func draw(in view: MTKView) {
 //        semaphore.wait()
         
-        autoreleasepool {
+//        autoreleasepool {
             executePasses(view: view) {
 //                self.semaphore.signal()
             }
-        }
+//        }
     }
     
     private func executePasses(view: MTKView, completion: @escaping () -> Void) {
