@@ -1,6 +1,6 @@
 //
 //  CreamyView.swift
-//  MilkWaves
+//  Creamy3D
 //
 //  Created by Alexey Oleynik on 29.09.23.
 //

@@ -12,8 +12,8 @@ public struct Mesh: Object {
     public enum Source {
         case sphere
         case cube
-        case obj(String, shouldGenerateNormals: Bool)
-        case stl(String, shouldGenerateNormals: Bool)
+        case obj(String)
+        case stl(String)
     }
     
     internal struct Options {
@@ -23,6 +23,7 @@ public struct Mesh: Object {
         var rotation: (angle: Angle, axis: SIMD3<Double>)
         var frame: (width: CGFloat?, height: CGFloat?)?
         var insets: EdgeInsets
+        var shouldGenerateNormals: Bool
     }
     
     let source: Source
@@ -42,7 +43,8 @@ public struct Mesh: Object {
                 offset: .zero, 
                 rotation: (.zero, .zero),
                 frame: nil, 
-                insets: .init()
+                insets: .init(),
+                shouldGenerateNormals: false
             )
         )
     }
@@ -63,9 +65,9 @@ public struct Mesh: Object {
             return "sphere"
         case .cube:
             return "cube"
-        case .obj(let name, _):
+        case .obj(let name):
             return "obj_\(name)"
-        case .stl(let name, _):
+        case .stl(let name):
             return "stl_\(name)"
         }
     }
@@ -101,6 +103,16 @@ public extension Mesh {
     @inlinable
     func scaledToFit() -> Self {
         aspectRatio(contentMode: .fit)
+    }
+    
+    func generateNormals(_ shouldGenerate: Bool = true) -> Self {
+        var options = self.options
+        options.shouldGenerateNormals = shouldGenerate
+        return .init(
+            source: source,
+            materials: materials,
+            options: options
+        )
     }
 }
 
@@ -205,17 +217,17 @@ extension Mesh {
                 dimensions: .one,
                 segments: .one
             )
-        case let .obj(name, shouldGenerateNormals):
+        case let .obj(name):
             return ModelMeshLoader(
                 name: name,
                 ext: "obj",
-                shouldGenerateNormals: shouldGenerateNormals
+                shouldGenerateNormals: options.shouldGenerateNormals
             )
-        case let .stl(name, shouldGenerateNormals):
+        case let .stl(name):
             return ModelMeshLoader(
                 name: name,
                 ext: "stl",
-                shouldGenerateNormals: shouldGenerateNormals
+                shouldGenerateNormals: options.shouldGenerateNormals
             )
         }
     }

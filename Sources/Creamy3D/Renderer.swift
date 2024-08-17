@@ -1,6 +1,6 @@
 //
 //  Renderer.swift
-//  CelShading
+//  Creamy3D
 //
 //  Created by Alexey Oleynik on 04.03.23.
 //
@@ -8,6 +8,7 @@
 import MetalKit
 import SwiftUI
 
+@MainActor
 final class Renderer: NSObject, ObservableObject {
     
     struct Config {
