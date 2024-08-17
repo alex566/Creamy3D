@@ -99,7 +99,7 @@ final class Renderer: NSObject, ObservableObject {
     private func update(mesh: Mesh, projection: Projection) {
         if let node = meshes[mesh.id] {
             node.update(
-                mesh: mesh, 
+                mesh: mesh,
                 projection: projection
             )
         } else {
@@ -139,20 +139,19 @@ final class Renderer: NSObject, ObservableObject {
 extension Renderer: MTKViewDelegate {
 
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
-        print("Resize: \(size)")
     }
 
     public func draw(in view: MTKView) {
-//        semaphore.wait()
+        semaphore.wait()
         
-//        autoreleasepool {
+        autoreleasepool {
             executePasses(view: view) {
-//                self.semaphore.signal()
+                self.semaphore.signal()
             }
-//        }
+        }
     }
     
-    private func executePasses(view: MTKView, completion: @escaping () -> Void) {
+    private func executePasses(view: MTKView, completion: @Sendable @escaping () -> Void) {
         guard let commandBuffer = commandQueue.makeCommandBuffer() else {
             return
         }
@@ -181,7 +180,7 @@ extension Renderer: MTKViewDelegate {
         commandBuffer.present(drawable)
                 
         // Finalize
-        commandBuffer.addCompletedHandler { _ in
+        commandBuffer.addCompletedHandler { @Sendable _ in
             completion()
         }
         commandBuffer.commit()
