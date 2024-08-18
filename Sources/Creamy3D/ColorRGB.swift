@@ -8,9 +8,9 @@
 import Foundation
 
 public struct ColorRGB {
-    let r: Double
-    let g: Double
-    let b: Double
+    public let r: Double
+    public let g: Double
+    public let b: Double
     
     public init(r: Double, g: Double, b: Double) {
         self.r = r
@@ -42,16 +42,34 @@ public struct ColorRGB {
     
     // MARK: - Factories
     
+    @inlinable
     public static var black: Self {
         .init(r: 0.0, g: 0.0, b: 0.0)
     }
     
+    @inlinable
     public static var white: Self {
         .init(r: 1.0, g: 1.0, b: 1.0)
     }
     
+    @inlinable
+    public static var red: Self {
+        .init(r: 1.0, g: 0.0, b: 0.0)
+    }
+    
+    @inlinable
+    public static var green: Self {
+        .init(r: 0.0, g: 1.0, b: 0.0)
+    }
+    
+    @inlinable
+    public static var blue: Self {
+        .init(r: 0.0, g: 0.0, b: 1.0)
+    }
+    
     // MARK: - Internal
     
+    @inlinable
     var simd: SIMD3<Float> {
         .init(Float(r), Float(g), Float(b))
     }

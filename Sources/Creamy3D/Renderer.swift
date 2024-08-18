@@ -7,6 +7,7 @@
 
 import MetalKit
 import SwiftUI
+import OSLog
 
 @MainActor
 final class Renderer: NSObject, ObservableObject {
@@ -86,10 +87,13 @@ final class Renderer: NSObject, ObservableObject {
     }
     
     func update(objects: [any Object], projection: Projection, view: MTKView) {
-        for object in objects {
-            if let mesh = object as? Mesh {
-                self.update(mesh: mesh, projection: projection)
-            }
+        let meshes = objects.compactMap { $0 as? Mesh }
+        // Remove meshes that are not in the list anymore
+        let allIDs = meshes.map { $0.id }
+        self.meshes = self.meshes.filter { allIDs.contains($0.key) }
+        // Update the rest
+        meshes.forEach { mesh in
+            self.update(mesh: mesh, projection: projection)
         }
         view.isPaused = false
     }
@@ -102,6 +106,7 @@ final class Renderer: NSObject, ObservableObject {
                 mesh: mesh,
                 projection: projection
             )
+            Logger.sceneLoading.debug("Updated node: \(mesh.id)")
         } else {
             do {
                 let node = MeshNode()
@@ -118,8 +123,9 @@ final class Renderer: NSObject, ObservableObject {
                     projection: projection
                 )
                 meshes[mesh.id] = node
+                Logger.sceneLoading.debug("Added node: \(mesh.id)")
             } catch {
-                print("Failed to add mesh(\(mesh.id): \(error)")
+                Logger.sceneLoading.error("Failed to add mesh(\(mesh.id): \(error)")
             }
         }
     }
@@ -139,6 +145,7 @@ final class Renderer: NSObject, ObservableObject {
 extension Renderer: MTKViewDelegate {
 
     public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        Logger.sceneLoading.info("Scene resized to (\(size.width), \(size.height))")
     }
 
     public func draw(in view: MTKView) {

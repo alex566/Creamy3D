@@ -21,20 +21,23 @@ public struct Mesh: Object {
         var aspectRatio: (CGFloat?, ContentMode)?
         var offset: CGSize
         var rotation: (angle: Angle, axis: SIMD3<Double>)
-        var frame: (width: CGFloat?, height: CGFloat?)?
+        var frame: (width: CGFloat?, height: CGFloat?, depth: CGFloat?)?
         var insets: EdgeInsets
         var shouldGenerateNormals: Bool
     }
     
+    let id: String
     let source: Source
     let materials: [any MeshMaterial]
     let options: Options
     
     public init(
+        id: String,
         source: Source,
         @MeshMaterialBuilder makeMaterials: () -> [any MeshMaterial]
     ) {
         self.init(
+            id: id,
             source: source,
             materials: makeMaterials(),
             options: .init(
@@ -50,26 +53,15 @@ public struct Mesh: Object {
     }
     
     internal init(
+        id: String,
         source: Source,
         materials: [any MeshMaterial],
         options: Options
     ) {
+        self.id = id
         self.source = source
         self.options = options
         self.materials = materials
-    }
-    
-    internal var id: String {
-        switch source {
-        case .sphere:
-            return "sphere"
-        case .cube:
-            return "cube"
-        case .obj(let name):
-            return "obj_\(name)"
-        case .stl(let name):
-            return "stl_\(name)"
-        }
     }
 }
 
@@ -79,6 +71,7 @@ public extension Mesh {
         var options = self.options
         options.isResizable = true
         return .init(
+            id: id,
             source: source,
             materials: materials,
             options: options
@@ -89,6 +82,7 @@ public extension Mesh {
         var options = self.options
         options.aspectRatio = (aspectRatio, contentMode)
         return .init(
+            id: id,
             source: source,
             materials: materials,
             options: options
@@ -109,6 +103,7 @@ public extension Mesh {
         var options = self.options
         options.shouldGenerateNormals = shouldGenerate
         return .init(
+            id: id,
             source: source,
             materials: materials,
             options: options
@@ -122,6 +117,7 @@ public extension Mesh {
         var options = self.options
         options.offset = offset
         return .init(
+            id: id,
             source: source,
             materials: materials,
             options: options
@@ -143,6 +139,7 @@ public extension Mesh {
         var options = self.options
         options.rotation = (angle, .init(axis.x, axis.y, axis.z))
         return .init(
+            id: id,
             source: source,
             materials: materials,
             options: options
@@ -154,11 +151,13 @@ public extension Mesh {
     
     func frame(
         width: CGFloat? = nil,
-        height: CGFloat? = nil
+        height: CGFloat? = nil,
+        depth: CGFloat? = nil
     ) -> Mesh {
         var options = self.options
-        options.frame = (width, height)
+        options.frame = (width, height, depth)
         return .init(
+            id: id,
             source: source,
             materials: materials,
             options: options
@@ -177,6 +176,7 @@ public extension Mesh {
         var options = self.options
         options.insets = insets
         return .init(
+            id: id,
             source: source,
             materials: materials,
             options: options

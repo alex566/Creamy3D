@@ -99,10 +99,10 @@ extension MeshNode: Renderable {
     // MARK: - Utils
     private func calculateScale(options: Mesh.Options, projection: Projection) -> SIMD3<Float> {
         guard let mesh, options.isResizable else {
-            return .zero
+            return .one
         }
         let frameSize = calculateSize(options: options, projection: projection)
-        let meshSize = mesh.size.xy
+        let meshSize = mesh.size
         var scale = frameSize / meshSize
         
         if let aspectRatio = options.aspectRatio {
@@ -126,10 +126,10 @@ extension MeshNode: Renderable {
             }
         }
         
-        return .init(scale.x, scale.y, min(scale.x, scale.y))
+        return .init(scale.x, scale.y, scale.z)
     }
     
-    private func calculateSize(options: Mesh.Options, projection: Projection) -> SIMD2<Float> {
+    private func calculateSize(options: Mesh.Options, projection: Projection) -> SIMD3<Float> {
         let horizontalInset = options.insets.leading + options.insets.trailing
         let verticalInsets = options.insets.top + options.insets.bottom
         let frameWidth = options.frame?.width ?? projection.width
@@ -137,7 +137,8 @@ extension MeshNode: Renderable {
         
         return .init(
             Float(frameWidth - horizontalInset),
-            Float(frameHeight - verticalInsets)
+            Float(frameHeight - verticalInsets),
+            Float(options.frame?.depth ?? min(frameWidth, frameHeight))
         )
     }
     
