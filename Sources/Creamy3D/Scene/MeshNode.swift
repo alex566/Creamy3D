@@ -51,15 +51,16 @@ extension MeshNode: Renderable {
     
     func update(
         mesh: Mesh,
-        projection: Projection
+        rect: CGRect
     ) {
         let options = mesh.options
-        self.position = calculatePosition(options: options)
+        self.position = .init(Float(rect.midX), Float(rect.midY), 0.0)
+//        self.position = .init(100.0, 0.0, 0.0)
         self.rotation = .init(
             angle: Float(options.rotation.0.radians),
             axis: .init(options.rotation.1)
         )
-        self.scale = calculateScale(options: options, projection: projection)
+        self.scale = calculateScale(rect: rect)
     }
     
     func render(
@@ -97,57 +98,14 @@ extension MeshNode: Renderable {
     }
     
     // MARK: - Utils
-    private func calculateScale(options: Mesh.Options, projection: Projection) -> SIMD3<Float> {
-        guard let mesh, options.isResizable else {
-            return .one
+    private func calculateScale(rect: CGRect) -> SIMD3<Float> {
+        let frameSize = SIMD3(Float(rect.width), Float(rect.height), 30.0) // TODO:
+        guard let mesh else {
+            return frameSize
         }
-        let frameSize = calculateSize(options: options, projection: projection)
         let meshSize = mesh.size
-        var scale = frameSize / meshSize
-        
-        if let aspectRatio = options.aspectRatio {
-            let meshAspectRatio = CGFloat(meshSize.x / meshSize.y)
-            let targetRatio = aspectRatio.0 ?? meshAspectRatio
-            let frameRation = CGFloat(frameSize.x / frameSize.y)
-            
-            switch aspectRatio.1 {
-            case .fit:
-                if targetRatio > frameRation {
-                    scale.y = scale.y * Float(frameRation / targetRatio)
-                } else {
-                    scale.x = scale.x * Float(targetRatio / frameRation)
-                }
-            case .fill:
-                if targetRatio > frameRation {
-                    scale.x = scale.x / Float(frameRation / targetRatio)
-                } else {
-                    scale.y = scale.y / Float(targetRatio / frameRation)
-                }
-            }
-        }
-        
-        return .init(scale.x, scale.y, scale.z)
-    }
-    
-    private func calculateSize(options: Mesh.Options, projection: Projection) -> SIMD3<Float> {
-        let horizontalInset = options.insets.leading + options.insets.trailing
-        let verticalInsets = options.insets.top + options.insets.bottom
-        let frameWidth = options.frame?.width ?? projection.width
-        let frameHeight = options.frame?.height ?? projection.height
-        
-        return .init(
-            Float(frameWidth - horizontalInset),
-            Float(frameHeight - verticalInsets),
-            Float(options.frame?.depth ?? min(frameWidth, frameHeight))
-        )
-    }
-    
-    private func calculatePosition(options: Mesh.Options) -> SIMD3<Float> {
-        .init(
-            Float(options.offset.width + options.insets.leading / 2.0 - options.insets.trailing / 2.0),
-            Float(options.offset.height + options.insets.top / 2.0 - options.insets.bottom / 2.0),
-            0.0
-        )
+        let scale = frameSize / meshSize
+        return scale
     }
 }
 

@@ -86,27 +86,30 @@ final class Renderer: NSObject, ObservableObject {
         self.projectionMatrix = projection.makeMatrix()
     }
     
-    func update(objects: [any Object], projection: Projection, view: MTKView) {
-        let meshes = objects.compactMap { $0 as? Mesh }
+    func update(meshes: [Mesh], anchors: [String: CGRect], view: MTKView) {
         // Remove meshes that are not in the list anymore
         let allIDs = meshes.map { $0.id }
         self.meshes = self.meshes.filter { allIDs.contains($0.key) }
         // Update the rest
         meshes.forEach { mesh in
-            self.update(mesh: mesh, projection: projection)
+            guard let rect = anchors[mesh.id] else {
+                Logger.sceneLoading.error("Mesh \(mesh.id) has no anchor")
+                return
+            }
+            self.update(mesh: mesh, rect: rect)
         }
         view.isPaused = false
     }
     
     // MARK: - Utils
     
-    private func update(mesh: Mesh, projection: Projection) {
+    private func update(mesh: Mesh, rect: CGRect) {
         if let node = meshes[mesh.id] {
             node.update(
                 mesh: mesh,
-                projection: projection
+                rect: rect
             )
-            Logger.sceneLoading.debug("Updated node: \(mesh.id)")
+            Logger.sceneLoading.debug("Updated node: \(mesh.id), rect: (\(rect.minX), \(rect.minY)")
         } else {
             do {
                 let node = MeshNode()
@@ -120,10 +123,10 @@ final class Renderer: NSObject, ObservableObject {
                 )
                 node.update(
                     mesh: mesh,
-                    projection: projection
+                    rect: rect
                 )
                 meshes[mesh.id] = node
-                Logger.sceneLoading.debug("Added node: \(mesh.id)")
+                Logger.sceneLoading.debug("Added node: \(mesh.id), rect: (\(rect.minX), \(rect.minY)")
             } catch {
                 Logger.sceneLoading.error("Failed to add mesh(\(mesh.id): \(error)")
             }
@@ -195,6 +198,6 @@ extension Renderer: MTKViewDelegate {
         currentBuffer = (currentBuffer + 1) % Self.buffersCount
         frameIndex = (frameIndex + 1) % 64
         
-        view.isPaused = true
+//        view.isPaused = true
     }
 }

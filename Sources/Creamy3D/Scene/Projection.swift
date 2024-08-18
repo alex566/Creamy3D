@@ -15,9 +15,9 @@ struct Projection {
     let farZ: Float
     
     func makeMatrix() -> float4x4 {
-        Self.orthographicProjection(
-            left: Float(width / 2.0),
-            right: Float(-width / 2.0),
+        return Self.orthographicProjection(
+            left: Float(-width / 2.0),
+            right: Float(width / 2.0),
             bottom: Float(height / 2.0),
             top: Float(-height / 2.0),
             nearZ: nearZ,
@@ -32,7 +32,7 @@ struct Projection {
                                                nearZ: Float,
                                                farZ: Float) -> float4x4 {
         let scaleX = 2.0 / (right - left)
-        let scaleY = 2.0 / (top - bottom)
+        let scaleY = 2.0 / (top - bottom)  // Inverted Y-axis
         let scaleZ = 1.0 / (nearZ - farZ)
 
         let offsetX = -(right + left) / (right - left)
