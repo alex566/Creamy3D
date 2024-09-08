@@ -47,6 +47,9 @@ final class MatcapMaterialFunction: MaterialFunction {
         binded.pointee.textureID = texture.gpuResourceID
     }
     
+    func update(to material: any MeshMaterial) {
+    }
+    
     func useResources(encoder: MTLRenderCommandEncoder) {
         encoder.useResource(texture, usage: .read, stages: .fragment)
     }

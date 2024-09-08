@@ -24,14 +24,23 @@ struct SphereMeshLoader: MeshLoader {
             allocator: allocator
         )
         mesh.vertexDescriptor = makeVertexDescriptor()
+        mesh.addTangentBasis(
+            forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
+            normalAttributeNamed: MDLVertexAttributeNormal,
+            tangentAttributeNamed: MDLVertexAttributeTangent
+        )
         
-        do {
-            return .init(
-                size: mesh.boundingBox.maxBounds - mesh.boundingBox.minBounds,
-                mesh: try MTKMesh(mesh: mesh, device: device)
-            )
-        } catch {
-            throw MeshLoadingError.loadingFailed
+        guard let submesh = mesh.submeshes?.firstObject as? MDLSubmesh else {
+            fatalError("Couldn't find submesh in mesh")
         }
+        
+        return .init(
+            size: mesh.boundingBox.maxBounds - mesh.boundingBox.minBounds,
+            vertexCount: mesh.vertexCount,
+            vertexBuffer: mesh.vertexBuffers[0] as! MTKMeshBuffer,
+            vertexDescriptor: mesh.vertexDescriptor,
+            indexBuffer: submesh.indexBuffer as! MTKMeshBuffer,
+            indexType: .uint16
+        )
     }
 }

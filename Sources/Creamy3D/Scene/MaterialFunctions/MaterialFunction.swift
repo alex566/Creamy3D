@@ -22,5 +22,7 @@ public protocol MaterialFunction {
     func assignResources(pointer: UnsafeMutableRawPointer)
     func useResources(encoder: MTLRenderCommandEncoder)
     
+    func update(to material: any MeshMaterial)
+    
     var functionName: String { get }
 }

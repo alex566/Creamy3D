@@ -8,7 +8,7 @@
 #include <metal_stdlib>
 #include <simd/simd.h>
 
-#include "material_common.h"
+#include "../material_common.h"
 
 using namespace metal;
 
@@ -17,6 +17,8 @@ struct ColorMaterialArguments {
 };
 
 [[visible]]
-float4 color_material(VertexOut inFrag, device ColorMaterialArguments *resource) {
+float4 color_material(VertexOut inFrag,
+                      device ColorMaterialArguments *resource,
+                      constant FragmentUniforms &uniforms) {
     return float4(resource->color, 1.f);
 }

@@ -16,19 +16,29 @@ struct CubeMeshLoader: MeshLoader {
         let mesh = MDLMesh.newBox(
             withDimensions: dimensions,
             segments: segments,
-            geometryType: .triangles,
+            geometryType: .quads,
             inwardNormals: false,
             allocator: allocator
         )
         mesh.vertexDescriptor = makeVertexDescriptor()
         
-        do {
-            return .init(
-                size: mesh.boundingBox.maxBounds - mesh.boundingBox.minBounds,
-                mesh: try MTKMesh(mesh: mesh, device: device)
-            )
-        } catch {
-            throw MeshLoadingError.loadingFailed
+        mesh.addTangentBasis(
+            forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
+            normalAttributeNamed: MDLVertexAttributeNormal,
+            tangentAttributeNamed: MDLVertexAttributeTangent
+        )
+        
+        guard let submesh = mesh.submeshes?.firstObject as? MDLSubmesh else {
+            fatalError("Couldn't find submesh in mesh")
         }
+        
+        return .init(
+            size: mesh.boundingBox.maxBounds - mesh.boundingBox.minBounds,
+            vertexCount: mesh.vertexCount,
+            vertexBuffer: mesh.vertexBuffers[0] as! MTKMeshBuffer,
+            vertexDescriptor: mesh.vertexDescriptor,
+            indexBuffer: submesh.indexBuffer as! MTKMeshBuffer,
+            indexType: .uint16
+        )
     }
 }

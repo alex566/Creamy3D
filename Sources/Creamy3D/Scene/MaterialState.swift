@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Alexey Oleynik on 29.09.23.
 //
@@ -19,11 +19,19 @@ struct ShaderMaterial {
     var alpha: Float
 }
 
+struct FragmentUniforms {
+    let cameraWorldPosition: SIMD3<Float>
+}
+
 final class MaterialState {
+    
+    // For debugging purposes
+    private let drawAsWireframe = false
     
     private var pipelineState: MTLRenderPipelineState!
     private var depthPipelineState: MTLDepthStencilState!
     
+    private var resourcesStride = 0
     private var materialFunctions = [any MaterialFunction]()
     private var resourcesBuffer: MTLBuffer!
     private var materialsBuffer: MTLBuffer!
@@ -31,6 +39,8 @@ final class MaterialState {
     
     func setup(
         materials: [any MeshMaterial],
+        vertexDescriptor: MTLVertexDescriptor,
+        tessellationIndexType: MTLTessellationControlPointIndexType,
         config: Renderer.Config,
         device: MTLDevice,
         library: MTLLibrary,
@@ -48,17 +58,33 @@ final class MaterialState {
             return function
         }
         
-        var (stride, buffer) = makeResourcesBuffer(device: device, functions: materialFunctions)
+        resourcesStride = calculateResourcesStride(functions: materialFunctions)
+        if resourcesStride == 0 {
+            resourcesStride = 1
+        }
+        resourcesBuffer = device.makeBuffer(
+            length: resourcesStride * materialFunctions.count,
+            options: .storageModeShared
+        )!
+        updateResourcesBuffer(
+            resourcesBuffer,
+            stride: resourcesStride,
+            functions: materialFunctions
+        )
+        
         var materialsCount = Int32(materialFunctions.count)
         
-        resourcesBuffer = buffer
-        materialsBuffer = makeMaterialsBuffer(
-            device: device,
+        materialsBuffer = device.makeBuffer(
+            length: MemoryLayout<ShaderMaterial>.stride * materials.count,
+            options: .storageModeShared
+        )!
+        materialsBuffer = updateMaterialsBuffer(
+            materialsBuffer,
             materials: zip(materials, materialFunctions).map { ($0, $1) }
         )
         
         let constants = MTLFunctionConstantValues()
-        constants.setConstantValue(&stride, type: .uint, index: 0)
+        constants.setConstantValue(&resourcesStride, type: .uint, index: 0)
         constants.setConstantValue(&materialsCount, type: .int, index: 1)
         
         let vertexFunction = library.makeFunction(name: "vertex_common")
@@ -67,7 +93,7 @@ final class MaterialState {
         let pipelineDescriptor = MTLRenderPipelineDescriptor()
         pipelineDescriptor.vertexFunction = vertexFunction
         pipelineDescriptor.fragmentFunction = fragmentFunction
-        pipelineDescriptor.vertexDescriptor = makeVertexDescriptor()
+        pipelineDescriptor.vertexDescriptor = vertexDescriptor
         pipelineDescriptor.colorAttachments[0].pixelFormat = config.colorPixelFormat
         pipelineDescriptor.colorAttachments[0].isBlendingEnabled = true
         pipelineDescriptor.rasterSampleCount = config.sampleCount
@@ -81,6 +107,10 @@ final class MaterialState {
         pipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = .oneMinusSourceAlpha
         pipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = .oneMinusSourceAlpha
         pipelineDescriptor.depthAttachmentPixelFormat = config.depthPixelFormat
+        
+        pipelineDescriptor.tessellationPartitionMode = .pow2
+        pipelineDescriptor.tessellationFactorStepFunction = .perPatch
+        pipelineDescriptor.tessellationControlPointIndexType = tessellationIndexType
         
         let linkedFunctions = MTLLinkedFunctions()
         linkedFunctions.functions = mtlFunctions
@@ -103,9 +133,21 @@ final class MaterialState {
         self.depthPipelineState = device.makeDepthStencilState(descriptor: depthDescriptor)!
     }
     
-    func activate(encoder: MTLRenderCommandEncoder) {
+    func update(materials: [any MeshMaterial]) {
+        for (function, material) in zip(materialFunctions, materials) {
+            function.update(to: material)
+        }
+        updateResourcesBuffer(
+            resourcesBuffer,
+            stride: resourcesStride,
+            functions: materialFunctions
+        )
+    }
+    
+    func activate(encoder: MTLRenderCommandEncoder, camera: Camera) {
         encoder.setDepthStencilState(depthPipelineState)
         encoder.setRenderPipelineState(pipelineState)
+        encoder.setTriangleFillMode(drawAsWireframe ? .lines : .fill)
         
         // Setup functions for every material
         let materialsTableDescriptor = MTLVisibleFunctionTableDescriptor()
@@ -122,9 +164,11 @@ final class MaterialState {
         
         encoder.setFragmentVisibleFunctionTable(materialsTable, bufferIndex: 0)
 
+        var uniforms = FragmentUniforms(cameraWorldPosition: camera.position)
         
         encoder.setFragmentBuffer(resourcesBuffer, offset: 0, index: 1)
         encoder.setFragmentBuffer(materialsBuffer, offset: 0, index: 2)
+        encoder.setFragmentBytes(&uniforms, length: MemoryLayout<FragmentUniforms>.stride, index: 3)
         
         for materialFunction in materialFunctions {
             materialFunction.useResources(encoder: encoder)
@@ -133,67 +177,32 @@ final class MaterialState {
     
     // MARK: - Utils
     
-    private func makeVertexDescriptor() -> MTLVertexDescriptor {
-        // Create the vertex descriptor
-        let vertexDescriptor = MTLVertexDescriptor()
-        
-        // Position attribute
-        vertexDescriptor.attributes[0].format = .float4
-        vertexDescriptor.attributes[0].offset = 0
-        vertexDescriptor.attributes[0].bufferIndex = 0
-
-        // Normal attribute
-        vertexDescriptor.attributes[1].format = .float3
-        vertexDescriptor.attributes[1].offset = MemoryLayout<SIMD4<Float>>.stride
-        vertexDescriptor.attributes[1].bufferIndex = 0
-        
-        // Tangent attribute
-        vertexDescriptor.attributes[2].format = .float3
-        vertexDescriptor.attributes[2].offset = MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride
-        vertexDescriptor.attributes[2].bufferIndex = 0
-        
-        // UV attribute
-        vertexDescriptor.attributes[3].format = .float2
-        vertexDescriptor.attributes[3].offset = MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride * 2
-        vertexDescriptor.attributes[3].bufferIndex = 0
-
-        // Create a single interleaved layout
-        vertexDescriptor.layouts[0].stride = MemoryLayout<SIMD4<Float>>.stride + MemoryLayout<SIMD3<Float>>.stride * 2 + MemoryLayout<SIMD2<Float>>.stride
-        vertexDescriptor.layouts[0].stepRate = 1
-        vertexDescriptor.layouts[0].stepFunction = .perVertex
-        return vertexDescriptor
-    }
-    
-    private func makeResourcesBuffer(device: MTLDevice, functions: [any MaterialFunction]) -> (stride: UInt32, buffer: MTLBuffer) {
+    private func calculateResourcesStride(functions: [any MaterialFunction]) -> Int {
         var resourcesStride = 0
         for function in functions {
             if function.resourcesSize > resourcesStride {
                 resourcesStride = function.resourcesSize
             }
         }
-        
-        let buffer = device.makeBuffer(
-            length: resourcesStride * functions.count,
-            options: .storageModeShared
-        )!
-        
-        let pointer = buffer.contents()
-        for (i, function) in functions.enumerated() {
-            let advancedPointer = pointer.advanced(by: resourcesStride * i)
-            function.assignResources(pointer: advancedPointer)
-        }
-        
-        return (UInt32(resourcesStride), buffer)
+        return resourcesStride
     }
     
-    private func makeMaterialsBuffer(
-        device: MTLDevice,
+    private func updateResourcesBuffer(
+        _ buffer: MTLBuffer,
+        stride: Int,
+        functions: [any MaterialFunction]
+    ) {
+        let pointer = buffer.contents()
+        for (i, function) in functions.enumerated() {
+            let advancedPointer = pointer.advanced(by: stride * i)
+            function.assignResources(pointer: advancedPointer)
+        }
+    }
+    
+    private func updateMaterialsBuffer(
+        _ buffer: MTLBuffer,
         materials: [(material: any MeshMaterial, function: any MaterialFunction)]
     ) -> MTLBuffer {
-        let buffer = device.makeBuffer(
-            length: MemoryLayout<ShaderMaterial>.stride * materials.count,
-            options: .storageModeShared
-        )!
         buffer.label = "Materials"
         let pointer = buffer.contents()
         for (i, material) in materials.enumerated() {

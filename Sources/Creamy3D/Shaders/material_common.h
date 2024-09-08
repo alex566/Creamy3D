@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include <simd/simd.h>
+
+using namespace metal;
+
 struct VertexOut {
     float4 position [[position]];
     float3 normal;
@@ -15,4 +19,16 @@ struct VertexOut {
     float3 vTangent;
     float3 worldPos;
     float2 uv;
+};
+
+struct Uniforms {
+     float4x4 MVP;
+     float4x4 model;
+     float4x4 view;
+     float3x3 normalMatrix;
+     float time;
+};
+
+struct FragmentUniforms {
+    float3 cameraWorldPos;
 };

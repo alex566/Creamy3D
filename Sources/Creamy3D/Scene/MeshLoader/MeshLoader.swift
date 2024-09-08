@@ -16,7 +16,11 @@ enum MeshLoadingError: Error {
 
 struct LoadedMesh {
     let size: SIMD3<Float>
-    let mesh: MTKMesh
+    let vertexCount: Int
+    let vertexBuffer: MTKMeshBuffer
+    let vertexDescriptor: MDLVertexDescriptor
+    let indexBuffer: MTKMeshBuffer
+    let indexType: MTLTessellationControlPointIndexType
 }
 
 protocol MeshLoader {
@@ -39,10 +43,11 @@ extension MeshLoader {
         )
 
         // Normal attribute
+        let normalOffset = MemoryLayout<SIMD4<Float>>.stride 
         mdlVertexDescriptor.attributes[1] = MDLVertexAttribute(
             name: MDLVertexAttributeNormal,
             format: .float3,
-            offset: MemoryLayout<SIMD4<Float>>.stride,
+            offset: normalOffset,
             bufferIndex: 0
         )
         

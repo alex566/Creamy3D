@@ -14,7 +14,7 @@ private struct ColorMaterialArguments {
 
 final class ColorMaterialFunction: MaterialFunction {
 
-    let color: SIMD3<Float>
+    private var color: SIMD3<Float>
     
     init(color: SIMD3<Float>) {
         self.color = color
@@ -34,6 +34,13 @@ final class ColorMaterialFunction: MaterialFunction {
     func assignResources(pointer: UnsafeMutableRawPointer) {
         let binded = pointer.bindMemory(to: ColorMaterialArguments.self, capacity: 1)
         binded.pointee.color = color
+    }
+    
+    func update(to material: any MeshMaterial) {
+        guard let other = material as? ColorMaterial else {
+            return
+        }
+        color = other.color.SRGBToLinear().simd
     }
     
     func useResources(encoder: MTLRenderCommandEncoder) {

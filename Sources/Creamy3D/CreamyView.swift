@@ -53,13 +53,15 @@ public struct CreamyView<Content: View>: View {
                     // Shift the camera to put zero into the top left corner
                     let offset = SIMD3<Float>(
                         Float(proxy.size.width / 2.0),
-                        Float(proxy.size.height / 2.0), 0.0)
+                        Float(proxy.size.height / 2.0),
+                        0.0
+                    )
                     MetalView(
                         projection: .init(
                             width: proxy.size.width,
                             height: proxy.size.height,
-                            nearZ: 0.001,
-                            farZ: .greatestFiniteMagnitude),
+                            nearZ: 0.01,
+                            farZ: 2000.0),
                         camera: .init(
                             position: cameraPlacement.position + offset,
                             target: cameraPlacement.target + offset,

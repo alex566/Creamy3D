@@ -6,47 +6,14 @@
 //
 
 #include <metal_stdlib>
-#include <simd/simd.h>
 
 #include "material_common.h"
 
 using namespace metal;
 
-struct Vertex {
-     float4 position [[attribute(0)]];
-     float3 normal [[attribute(1)]];
-     float3 tangent  [[attribute(2)]]; 
-     float2 uv [[attribute(3)]];
-};
-
-struct Uniforms {
-     float4x4 MVP;
-     float4x4 model;
-     float4x4 view;
-     float3x3 normalMatrix;
-     float time;
-};
-
-vertex VertexOut vertex_common(Vertex in [[stage_in]], constant Uniforms &uniforms [[buffer(3)]]) {
-
-    float3 displacedPosition = in.position.xyz;
-    float3 adjustedNormal = in.normal;
-    float4 pos = float4(displacedPosition, 1.0);
-     
-    VertexOut out;
-    out.position = uniforms.MVP * pos;
-    out.normal = normalize(uniforms.normalMatrix * adjustedNormal);
-    out.tangent = normalize(uniforms.normalMatrix * in.tangent);
-    out.vNormal = normalize(uniforms.view * float4(uniforms.normalMatrix * adjustedNormal, 0.f)).xyz;
-    out.vTangent = (uniforms.view * float4(uniforms.normalMatrix * in.tangent, 0.f)).xyz;
-    out.worldPos = (uniforms.model * pos).xyz;
-    out.uv = in.uv;
-    return out;
-}
-
 // MARK: - Fragment
 
-using MaterialFunction = float4(VertexOut, device void *);
+using MaterialFunction = float4(VertexOut, device void *, constant FragmentUniforms &);
 
 constant unsigned int resourcesStride [[function_constant(0)]];
 constant int materialsCount [[function_constant(1)]];
@@ -87,7 +54,8 @@ float4 overlayBlend(float4 src, float4 dst) {
 fragment float4 fragment_common(VertexOut inFrag [[stage_in]],
                                 visible_function_table<MaterialFunction> materialFunctions [[buffer(0)]],
                                 device void *resources [[buffer(1)]],
-                                device Material *materials [[buffer(2)]]) {
+                                device Material *materials [[buffer(2)]],
+                                constant FragmentUniforms &uniforms [[buffer(3)]]) {
     float4 finalColor = float4(0.f, 0.f, 0.f, 1.f);
     
     for (int i = 0; i < materialsCount; ++i) {
@@ -95,7 +63,7 @@ fragment float4 fragment_common(VertexOut inFrag [[stage_in]],
         MaterialFunction *materialFunction = materialFunctions[material.functionIndex];
         device void *resource = ((device char *)resources + resourcesStride * material.resourceIndex);
         
-        [[function_groups("material")]] float4 materialColor = materialFunction(inFrag, resource);
+        [[function_groups("material")]] float4 materialColor = materialFunction(inFrag, resource, uniforms);
         materialColor.a *= material.alpha;
         
         switch (material.blend) {

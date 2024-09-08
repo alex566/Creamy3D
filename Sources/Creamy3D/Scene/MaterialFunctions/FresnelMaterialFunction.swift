@@ -47,6 +47,9 @@ final class FresnelMaterialFunction: MaterialFunction {
         binded.pointee.bias = Float(bias)
     }
     
+    func update(to material: any MeshMaterial) {
+    }
+    
     func useResources(encoder: MTLRenderCommandEncoder) {
     }
 }

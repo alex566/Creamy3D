@@ -38,7 +38,7 @@ final class Renderer: NSObject, ObservableObject {
     // MARK: Scene
     private let startTime: TimeInterval
     
-    private var viewMatrix = float4x4()
+    private var camera = Camera(position: .zero, target: .zero, up: .zero)
     private var projectionMatrix = float4x4()
     
     // MARK: - Mesh
@@ -77,12 +77,13 @@ final class Renderer: NSObject, ObservableObject {
         view.clearDepth = 1.0
         view.clearColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         view.depthStencilPixelFormat = config.depthPixelFormat
+        view.depthStencilStorageMode = .memoryless
         view.backgroundColor = .clear
         view.sampleCount = config.sampleCount
     }
     
     func update(camera: Camera, projection: Projection) {
-        self.viewMatrix = camera.makeMatrix()
+        self.camera = camera
         self.projectionMatrix = projection.makeMatrix()
     }
     
@@ -172,6 +173,14 @@ extension Renderer: MTKViewDelegate {
             return
         }
         
+        guard let computeEncoder = commandBuffer.makeComputeCommandEncoder() else {
+            return
+        }
+        meshes.values.forEach { mesh in
+            mesh.compute(encoder: computeEncoder)
+        }
+        computeEncoder.endEncoding()
+        
         // Encode all meshes
         guard let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: descriptor) else {
             return
@@ -181,8 +190,8 @@ extension Renderer: MTKViewDelegate {
         
         meshes.values.forEach { mesh in
             mesh.render(encoder: encoder,
-                        viewProjectionMatrix: projectionMatrix * viewMatrix,
-                        viewMatrix: viewMatrix,
+                        viewProjectionMatrix: projectionMatrix * camera.viewMatrix,
+                        camera: camera,
                         deltaTime: startTime - Date().timeIntervalSince1970)
         }
         encoder.endEncoding()

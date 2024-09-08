@@ -8,42 +8,43 @@
 import MetalKit
 import ModelIO
 
-struct ModelMeshLoader: MeshLoader {
-    let name: String
-    let ext: String
-    let shouldGenerateNormals: Bool
-    
-    func load(device: MTLDevice, allocator: MTKMeshBufferAllocator) throws -> LoadedMesh {
-        guard let url = Bundle.main.url(forResource: name, withExtension: ext) else {
-            throw MeshLoadingError.fileNotFount
-        }
-        let asset = MDLAsset(
-            url: url,
-            vertexDescriptor: nil,
-            bufferAllocator: allocator
-        )
-        guard let mesh = asset.object(at: 0) as? MDLMesh else {
-            throw MeshLoadingError.incorrectStructure
-        }
-        mesh.vertexDescriptor = makeVertexDescriptor()
-        
-        if shouldGenerateNormals {
-            mesh.addNormals(withAttributeNamed: MDLVertexAttributeNormal, creaseThreshold: 0.01)
-        }
-        
-        mesh.addOrthTanBasis(
-            forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
-            normalAttributeNamed: MDLVertexAttributeNormal,
-            tangentAttributeNamed: MDLVertexAttributeTangent
-        )
-        
-        do {
-            return .init(
-                size: mesh.boundingBox.maxBounds - mesh.boundingBox.minBounds,
-                mesh: try MTKMesh(mesh: mesh, device: device)
-            )
-        } catch {
-            throw MeshLoadingError.loadingFailed
-        }
-    }
-}
+//struct ModelMeshLoader: MeshLoader {
+//    let name: String
+//    let ext: String
+//    let shouldGenerateNormals: Bool
+//    
+//    func load(device: MTLDevice, allocator: MTKMeshBufferAllocator) throws -> LoadedMesh {
+//        guard let url = Bundle.main.url(forResource: name, withExtension: ext) else {
+//            throw MeshLoadingError.fileNotFount
+//        }
+//        let asset = MDLAsset(
+//            url: url,
+//            vertexDescriptor: nil,
+//            bufferAllocator: allocator
+//        )
+//        guard let mesh = asset.object(at: 0) as? MDLMesh else {
+//            throw MeshLoadingError.incorrectStructure
+//        }
+//        mesh.vertexDescriptor = makeVertexDescriptor()
+//        
+//        if shouldGenerateNormals {
+//            mesh.addNormals(withAttributeNamed: MDLVertexAttributeNormal, creaseThreshold: 0.01)
+//        }
+//        
+//        mesh.addOrthTanBasis(
+//            forTextureCoordinateAttributeNamed: MDLVertexAttributeTextureCoordinate,
+//            normalAttributeNamed: MDLVertexAttributeNormal,
+//            tangentAttributeNamed: MDLVertexAttributeTangent
+//        )
+//        
+//        do {
+//            return .init(
+//                size: mesh.boundingBox.maxBounds - mesh.boundingBox.minBounds,
+//                mesh: try MTKMesh(mesh: mesh, device: device),
+//                vertexDescriptor: mesh.vertexDescriptor
+//            )
+//        } catch {
+//            throw MeshLoadingError.loadingFailed
+//        }
+//    }
+//}
