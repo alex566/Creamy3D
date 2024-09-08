@@ -36,7 +36,7 @@ The material system is inspired by spline.design, so the goal is to make any vis
 | Fresnel    | 🟡 partially done | `Factor` is missing. The result doesn't match precisely with spline.design |
 | Texture    | 🟡 partially done | Currently only samples based on UV                                         |
 | Light      | ⚙ in progress     |                                                                            |
-| Normal     | todo              |                                                                            |
+| Normal     | ✅ done           |                                                                            |
 | Depth      | todo              |                                                                            |
 | Gradient   | todo              |                                                                            |
 | Noise      | todo              |                                                                            |
@@ -50,12 +50,8 @@ The main focus will be on rendering models from files.
 
 | Meshes     | Status            |
 |------------|-------------------|
-| Sphere     | ✅ done           |
-| Cube       | ✅ done           |
+| Shape       | ✅ Done          |
 | Model      | 🟡 partially done |
-| Plane      | todo              |
-| Cylinder   | todo              |
-| Cone       | todo              |
 | ...        | todo              |
 
 The most common post-processing effects are planned. The list is not full yet.
@@ -80,9 +76,9 @@ The most common post-processing effects are planned. The list is not full yet.
 - [ ] Bloom effect support
 
 ## 🚧 Plans for v0.4 - Rework objects management
-- [ ] Split Mesh into separate types, like "Sphere(), Cube(), Model()"
+- [X] Split Mesh into separate types, like "ShapeMesh(), ModelMesh()"
 - [ ] Add ability to apply separate materials to submeshes
-- [ ] Add Scene type which can handle adding USD
+
 ```Swift
 CreamyView {
     Scene(name: "my_scene.usdz") {
@@ -101,13 +97,6 @@ CreamyView {
 
 ## 🤔 Features under Consideration
 * Clonner, which repeats Meshes. Example:
-```Swift
-Clonner(.grid(.init(x: 10, y: 10, z: 10)), spacing: 16.0) {
-    Mesh(source: .sphere)
-        .resizable()
-        .frame(width: 50.0, height: 50.0)
-}
-```
 
 * Animated material transitions. The interface is under consideration. One option is:
 ```Swift
