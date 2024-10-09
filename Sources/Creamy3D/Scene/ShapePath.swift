@@ -145,6 +145,7 @@ struct ShapeSegment: CustomStringConvertible {
     }
     
     func calculateLineLength() -> Float {
+//        length(to - from)
         1.0 // No need to put too much positions for the line of any length
     }
         

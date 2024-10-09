@@ -38,7 +38,7 @@ final class Renderer: NSObject, ObservableObject {
     // MARK: Scene
     private let startTime: TimeInterval
     
-    private var camera = Camera(position: .zero, target: .zero, up: .zero)
+    private var camera = Camera(position: .zero, target: .zero, up: .zero, offset: .zero)
     private var projectionMatrix = float4x4()
     
     // MARK: - Mesh
@@ -80,6 +80,8 @@ final class Renderer: NSObject, ObservableObject {
         view.depthStencilStorageMode = .memoryless
         view.backgroundColor = .clear
         view.sampleCount = config.sampleCount
+        
+        print("Samples: \(config.sampleCount)")
     }
     
     func update(camera: Camera, projection: Projection) {
@@ -87,13 +89,13 @@ final class Renderer: NSObject, ObservableObject {
         self.projectionMatrix = projection.makeMatrix()
     }
     
-    func update(meshes: [Mesh], anchors: [String: CGRect], view: MTKView) {
+    func update(meshes: [Mesh], anchors: [String: CGRect?], view: MTKView) {
         // Remove meshes that are not in the list anymore
         let allIDs = meshes.map { $0.id }
         self.meshes = self.meshes.filter { allIDs.contains($0.key) }
         // Update the rest
         meshes.forEach { mesh in
-            guard let rect = anchors[mesh.id] else {
+            guard let value = anchors[mesh.id], let rect = value else {
                 Logger.sceneLoading.error("Mesh \(mesh.id) has no anchor")
                 return
             }
@@ -110,7 +112,7 @@ final class Renderer: NSObject, ObservableObject {
                 mesh: mesh,
                 rect: rect
             )
-            Logger.sceneLoading.debug("Updated node: \(mesh.id), rect: (\(rect.minX), \(rect.minY)")
+//            Logger.sceneLoading.debug("Updated node: \(mesh.id), rect: (\(rect.minX), \(rect.minY)")
         } else {
             do {
                 let node = MeshNode()
@@ -127,7 +129,7 @@ final class Renderer: NSObject, ObservableObject {
                     rect: rect
                 )
                 meshes[mesh.id] = node
-                Logger.sceneLoading.debug("Added node: \(mesh.id), rect: (\(rect.minX), \(rect.minY)")
+//                Logger.sceneLoading.debug("Added node: \(mesh.id), rect: (\(rect.minX), \(rect.minY)")
             } catch {
                 Logger.sceneLoading.error("Failed to add mesh(\(mesh.id): \(error)")
             }
@@ -187,6 +189,18 @@ extension Renderer: MTKViewDelegate {
         }
         encoder.setCullMode(.back)
         encoder.setFrontFacing(.counterClockwise)
+        
+//        let size = view.drawableSize
+//        let viewport = MTLViewport(
+//            originX: -size.width / 2.0,
+//            originY: -size.height / 2.0,
+//            width: size.width,
+//            height: size.height,
+//            znear: 0.0,
+//            zfar: 1.0
+//        )
+//        encoder.setViewport(viewport)
+//        encoder.setScissorRect(MTLScissorRect(x: 0, y: 0, width: Int(size.width), height: Int(size.height)))
         
         meshes.values.forEach { mesh in
             mesh.render(encoder: encoder,

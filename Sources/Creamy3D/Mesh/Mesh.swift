@@ -20,6 +20,7 @@ public struct Mesh {
         var aspectRatio: (CGFloat?, ContentMode)?
         var rotation: (angle: Angle, axis: SIMD3<Double>)
         var shouldGenerateNormals: Bool
+        var isVisible: Bool
     }
     
     let id: String
@@ -39,7 +40,8 @@ public struct Mesh {
             options: .init(
                 aspectRatio: nil,
                 rotation: (.zero, .zero),
-                shouldGenerateNormals: false
+                shouldGenerateNormals: false,
+                isVisible: true
             )
         )
     }
@@ -83,6 +85,17 @@ public extension Mesh {
     func generateNormals(_ shouldGenerate: Bool = true) -> Self {
         var options = self.options
         options.shouldGenerateNormals = shouldGenerate
+        return .init(
+            id: id,
+            source: source,
+            materials: materials,
+            options: options
+        )
+    }
+    
+    func hidden(isHidden: Bool = true) -> Self {
+        var options = self.options
+        options.isVisible = !isHidden
         return .init(
             id: id,
             source: source,

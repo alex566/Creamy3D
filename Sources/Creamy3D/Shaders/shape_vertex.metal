@@ -192,9 +192,8 @@ vertex VertexOut vertex_common(PatchIn patch [[stage_in]],
     out.position = uniforms.MVP * newPosition;
     out.normal = normalize(uniforms.normalMatrix * normal);
     out.tangent = normalize(uniforms.normalMatrix * tangent);
-    out.vNormal = normalize(uniforms.view * float4(out.normal, 0.f)).xyz;
-    out.vTangent = (uniforms.view * float4(out.tangent, 0.f)).xyz;
     out.worldPos = (uniforms.model * newPosition).xyz;
+    out.viewPos = (uniforms.view * float4(out.worldPos, 1.f)).xyz;
     out.uv = uv;
     return out;
 }

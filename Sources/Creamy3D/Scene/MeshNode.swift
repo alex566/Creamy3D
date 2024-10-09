@@ -8,6 +8,7 @@
 import simd
 import MetalKit
 import SwiftUICore
+import Spatial
 
 struct MeshUniforms {
     let mvp: float4x4
@@ -32,6 +33,8 @@ final class MeshNode: Transformable {
     
     private var shapePathBuffer: MTLBuffer!
     private var cornerPathBuffer: MTLBuffer!
+    
+    private var shouldRender = true
 }
 
 extension MeshNode {
@@ -89,16 +92,16 @@ extension MeshNode {
         rect: CGRect
     ) {
         let options = mesh.options
-        self.position = .init(Float(rect.midX), Float(rect.midY), 0.0)
+        
+        let cornerRadius = CGFloat(16.0)
+        self.position = .init(Float(rect.midX), Float(rect.midY), -(30.0 + Float(cornerRadius)) / 2.0)
         self.rotation = .init(
             angle: Float(options.rotation.0.radians),
             axis: .init(options.rotation.1)
         )
         self.scale = calculateScale(rect: rect)
         
-        let start = Date()
         let shape = RoundedRectangle(cornerRadius: 32.0, style: .continuous)
-        
         let shapeFrame = CGRect(
             origin: .init(x: -rect.width / 2.0, y: -rect.height / 2.0),
             size: rect.size
@@ -106,13 +109,10 @@ extension MeshNode {
         
         var path = ShapePath(path: shape.path(in: shapeFrame))
         path.multiply(by: .init(x: 1.0, y: 1.0) / self.scale.xy)
-        let end = Date()
-        print("ShapePath: \(end.timeIntervalSince(start)), segments: \(path.segments.count)")
         
         let pointer = self.shapePathBuffer.contents()
         memcpy(pointer, path.segments, MemoryLayout<ShapeSegment>.stride * path.segments.count)
         
-        let cornerRadius = CGFloat(16.0)
         var cornerPath = ShapePath(
             path: Path { path in
                 path.addRelativeArc(
@@ -129,6 +129,8 @@ extension MeshNode {
         memcpy(pointer2, cornerPath.segments, MemoryLayout<ShapeSegment>.stride)
         
         materialState?.update(materials: mesh.materials)
+        
+        shouldRender = mesh.options.isVisible
     }
     
     // No need to do it on GPU, it's just 6 instances in array
@@ -148,6 +150,9 @@ extension MeshNode {
         camera: Camera,
         deltaTime: Double
     ) {
+        guard shouldRender else {
+            return
+        }
         guard let mesh, let materialState else {
             return
         }
@@ -155,7 +160,7 @@ extension MeshNode {
             mvp: viewProjectionMatrix * model,
             model: model,
             view: camera.viewMatrix,
-            normalModel: calculateNormalMatrix(model),
+            normalModel: calculateNormalMatrix(camera.viewMatrix * model),
             time: Float(deltaTime)
         )
         
@@ -186,7 +191,7 @@ extension MeshNode {
     
     // MARK: - Utils
     private func calculateScale(rect: CGRect) -> SIMD3<Float> {
-        let frameSize = SIMD3(Float(rect.width), Float(rect.height), 50.0) // TODO:
+        let frameSize = SIMD3(Float(rect.width), Float(rect.height), 30.0) // TODO:
         guard let mesh else {
             return frameSize
         }

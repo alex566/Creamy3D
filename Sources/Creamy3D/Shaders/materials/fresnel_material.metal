@@ -27,12 +27,12 @@ float FresnelTerm(float cosTheta, float3 f0, float fresnelPower) {
 float4 fresnel_material(VertexOut inFrag,
                         device FresnelMaterialArgument *data,
                         constant FragmentUniforms &uniforms) {
-    float3 N = normalize(inFrag.vNormal);
-    float3 V = normalize(uniforms.cameraWorldPos - inFrag.worldPos);
+    float3 N = normalize(inFrag.normal);
+    float3 V = normalize(-inFrag.viewPos);
+    float cosPhi = dot(N, V);
     
     float3 f0 = 0.04;
     float3 fresnelColor = data->color;
-    float cosPhi = dot(N, V);
     float term = FresnelTerm(cosPhi, f0, data->intensity);
     return float4(fresnelColor, (data->bias + (1.f - data->bias) * term) * data->scale);
 }

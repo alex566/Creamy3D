@@ -6,18 +6,21 @@
 //
 
 import simd
+import Spatial
 
 struct Camera {
+    let offset: simd_float3
     let position: simd_float3
     let target: simd_float3
     let up: simd_float3
     let viewMatrix: float4x4
     
-    init(position: simd_float3, target: simd_float3, up: simd_float3) {
+    init(position: simd_float3, target: simd_float3, up: simd_float3, offset: simd_float3) {
         self.position = position
         self.target = target
         self.up = up
-        self.viewMatrix = Self.makeMatrix(position: position, target: target, up: up)
+        self.offset = offset
+        self.viewMatrix = Self.makeMatrix(position: position, target: target, up: up) * Self.makeOffsetMatrix(offset: offset)
     }
     
     static func makeMatrix(position: simd_float3, target: simd_float3, up: simd_float3) -> float4x4 {
@@ -33,5 +36,10 @@ struct Camera {
         )
 
         return matrix
+    }
+    
+    static func makeOffsetMatrix(offset: simd_float3) -> float4x4 {
+        let transform = AffineTransform3D(translation: Vector3D(x: offset.x, y: offset.y, z: offset.z))
+        return float4x4(transform)
     }
 }

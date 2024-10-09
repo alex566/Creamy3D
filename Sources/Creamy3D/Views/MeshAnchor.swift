@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct MeshAnchorKey: PreferenceKey {
-    static let defaultValue: [String: Anchor<CGRect>] = [:]
+    // Regularly it should be [String: Anchor<CGRect>]
+    // Because of the issue with coordinate space this workaround is needed
+    static let defaultValue: [String: CGRect?] = [:]
     static func reduce(
-        value: inout [String: Anchor<CGRect>],
-        nextValue: () -> [String: Anchor<CGRect>]
+        value: inout [String: CGRect?],
+        nextValue: () -> [String: CGRect?]
     ) {
         value.merge(nextValue()) { $1 }
     }
@@ -25,10 +27,12 @@ public struct MeshAnchor: View {
     }
 
     public var body: some View {
-        Color.clear
-            .anchorPreference(key: MeshAnchorKey.self, value: .bounds) {
-                anchor in
-                [id: anchor]
-            }
+        GeometryReader { proxy in
+            Color.clear
+                .preference(
+                    key: MeshAnchorKey.self,
+                    value: [id: proxy.frame(in: .named("creamy_scene"))]
+                )
+        }
     }
 }

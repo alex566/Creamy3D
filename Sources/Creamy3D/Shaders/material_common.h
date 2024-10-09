@@ -15,9 +15,10 @@ struct VertexOut {
     float4 position [[position]];
     float3 normal;
     float3 tangent;
-    float3 vNormal;
-    float3 vTangent;
+//    float3 vNormal;
+//    float3 vTangent;
     float3 worldPos;
+    float3 viewPos;
     float2 uv;
 };
 

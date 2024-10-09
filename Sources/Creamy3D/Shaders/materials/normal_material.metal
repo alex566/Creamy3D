@@ -13,5 +13,5 @@ using namespace metal;
 
 [[visible]]
 float4 normal_material(VertexOut inFrag, device void *resource, constant FragmentUniforms &uniforms) {
-    return float4((inFrag.vNormal + 1.f) * 0.5f, 1.f);
+    return float4((inFrag.normal + 1.f) * 0.5f, 1.f);
 }

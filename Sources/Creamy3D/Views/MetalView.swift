@@ -12,7 +12,7 @@ struct MetalView: UIViewRepresentable {
     let projection: Projection
     let camera: Camera
     let meshes: [Mesh]
-    let anchors: [String: CGRect]
+    let anchors: [String: CGRect?]
     
     @StateObject
     var renderer = Renderer()
