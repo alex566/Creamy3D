@@ -78,7 +78,11 @@ final class Renderer: NSObject, ObservableObject {
         view.clearColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.0)
         view.depthStencilPixelFormat = config.depthPixelFormat
         view.depthStencilStorageMode = .memoryless
+#if canImport(UIKit)
         view.backgroundColor = .clear
+#elseif os(macOS)
+        view.layer?.backgroundColor = .clear
+#endif
         view.sampleCount = config.sampleCount
         
         print("Samples: \(config.sampleCount)")

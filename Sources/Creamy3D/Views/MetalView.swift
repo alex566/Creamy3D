@@ -8,7 +8,7 @@
 import MetalKit
 import SwiftUI
 
-struct MetalView: UIViewRepresentable {
+struct MetalView: ViewRepresentable {
     let projection: Projection
     let camera: Camera
     let meshes: [Mesh]
@@ -17,7 +17,7 @@ struct MetalView: UIViewRepresentable {
     @StateObject
     var renderer = Renderer()
     
-    func makeUIView(context: Context) -> MTKView {
+    func makeView(context: Context) -> MTKView {
         let view = MTKView()
         renderer.setup(view: view)
         renderer.update(camera: camera, projection: projection)
@@ -25,7 +25,7 @@ struct MetalView: UIViewRepresentable {
         return view
     }
     
-    func updateUIView(_ uiView: MTKView, context: Context) {
+    func updateView(_ uiView: MTKView, context: Context) {
         renderer.update(camera: camera, projection: projection)
         renderer.update(meshes: meshes, anchors: anchors, view: uiView)
     }

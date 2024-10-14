@@ -51,14 +51,34 @@ float2 evaluateSegment(Segment segment, float t) {
         // Line segment: interpolate between P0 and P1
         return mix(segment.from, segment.to, t);
     } else if (segment.type == 1) {
+#if defined(__HAVE_RAYTRACING_CURVES__)
         return bezier(t, segment.from, segment.controlPoint1, segment.controlPoint2, segment.to);
+#else
+        float2 a = mix(segment.from, segment.controlPoint1, t);
+        float2 b = mix(segment.controlPoint2, segment.to, t);
+        return mix(a, b, t);
+#endif
     }
     return 0.f; // Fallback in case of an undefined type
 }
 
 float2 evaluateSegmentDerivative(Segment segment, float t) {
     if (segment.type == 1) {
+#if defined(__HAVE_RAYTRACING_CURVES__)
         float2 derivative = bezier_derivative(t, segment.from, segment.controlPoint1, segment.controlPoint2, segment.to);
+#else
+        float2 P0 = segment.from;
+        float2 P1 = segment.controlPoint1;
+        float2 P2 = segment.controlPoint2;
+        float2 P3 = segment.to;
+        
+        float u = 1.0 - t;
+        
+        float2 derivative =
+            3.0 * u * u * (P1 - P0) +
+            6.0 * u * t * (P2 - P1) +
+            3.0 * t * t * (P3 - P2);
+#endif
         return normalize(float2(derivative.y, -derivative.x));
     } else if (segment.type == 0) {
         float2 direction = normalize(segment.to - segment.from);
