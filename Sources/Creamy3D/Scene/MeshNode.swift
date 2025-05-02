@@ -94,7 +94,7 @@ extension MeshNode {
         let options = mesh.options
         
         let cornerRadius = CGFloat(16.0)
-        self.position = .init(Float(rect.midX), Float(rect.midY), -(30.0 + Float(cornerRadius)) / 2.0)
+        self.position = .init(Float(rect.midX), Float(rect.midY), -30.0 / 2.0 - Float(cornerRadius))
         self.rotation = .init(
             angle: Float(options.rotation.0.radians),
             axis: .init(options.rotation.1)

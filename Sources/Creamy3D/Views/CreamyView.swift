@@ -36,30 +36,22 @@ public struct CreamyView<Content: View>: View, @preconcurrency Animatable {
                                   axis: (cameraPlacement.rotation.axis.x,
                                          cameraPlacement.rotation.axis.y,
                                          cameraPlacement.rotation.axis.z),
+                              anchor: .init(x: 0.0, y: 0.0), 
                               anchorZ: 0.0,
                               perspective: 0.0)
             .backgroundPreferenceValue(MeshAnchorKey.self) { frames in
                 GeometryReader { proxy in
-                    // Shift the camera to put zero into the top left corner
-                    let offset = SIMD3<Float>(
-                        -Float(proxy.size.width / 2.0),
-                        -Float(proxy.size.height / 2.0),
-                        0.0
-                    )
+                    // We don't need offset anymore as projection handles coordinate alignment
                     MetalView(
                         projection: .init(
                             width: proxy.size.width,
                             height: proxy.size.height,
                             nearZ: 0.01,
                             farZ: 2000.0),
-                        camera: .init(
-                            position: cameraPlacement.position,
-                            target: cameraPlacement.target,
-                            up: cameraPlacement.up,
-                            offset: offset
-                        ),
+                        camera: .init(rotation: cameraPlacement.rotation,
+                                      position: cameraPlacement.position),
                         meshes: meshes,
-                        anchors: frames // anchor.mapValues { proxy[$0] }
+                        anchors: frames
                     )
                 }
             }

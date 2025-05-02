@@ -9,37 +9,43 @@ import simd
 import Spatial
 
 struct Camera {
-    let offset: simd_float3
     let position: simd_float3
-    let target: simd_float3
-    let up: simd_float3
+    let rotation: Rotation3D
+    let anchorZ: Float
     let viewMatrix: float4x4
     
-    init(position: simd_float3, target: simd_float3, up: simd_float3, offset: simd_float3) {
+    init(rotation: Rotation3D, position: simd_float3, anchorZ: Float = 0.0) {
         self.position = position
-        self.target = target
-        self.up = up
-        self.offset = offset
-        self.viewMatrix = Self.makeMatrix(position: position, target: target, up: up) * Self.makeOffsetMatrix(offset: offset)
-    }
-    
-    static func makeMatrix(position: simd_float3, target: simd_float3, up: simd_float3) -> float4x4 {
-        let zAxis = normalize(position - target)
-        let xAxis = normalize(cross(up, zAxis))
-        let yAxis = cross(zAxis, xAxis)
-
-        let matrix = simd_float4x4(
-            simd_float4(xAxis.x, yAxis.x, zAxis.x, 0),
-            simd_float4(xAxis.y, yAxis.y, zAxis.y, 0),
-            simd_float4(xAxis.z, yAxis.z, zAxis.z, 0),
-            simd_float4(-dot(xAxis, position), -dot(yAxis, position), -dot(zAxis, position), 1)
+        self.rotation = rotation
+        self.anchorZ = anchorZ
+        
+        // SwiftUI and Metal have different coordinate systems:
+        // - SwiftUI: origin at top-left, +Y down
+        // - Metal: origin at center, +Y up
+        // The offset shifts Metal coordinates to match SwiftUI
+        
+        // Anchor for Z-axis rotation
+        let anchorMatrix = float4x4(
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, anchorZ, 1]
         )
-
-        return matrix
-    }
-    
-    static func makeOffsetMatrix(offset: simd_float3) -> float4x4 {
-        let transform = AffineTransform3D(translation: Vector3D(x: offset.x, y: offset.y, z: offset.z))
-        return float4x4(transform)
+        
+        // Create rotation matrix
+        let rotationMatrix = float4x4(simd_quatf(rotation))
+        
+        // Position translation
+        let positionMatrix = float4x4(
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [position.x, position.y, position.z, 1]
+        )
+        
+        // Combine transformations to match SwiftUI's rotation3DEffect behavior:
+        // For a camera view matrix, we combine in reverse order of how objects transform
+        let transform = positionMatrix * anchorMatrix.inverse * rotationMatrix * anchorMatrix
+        self.viewMatrix = transform.inverse
     }
 }

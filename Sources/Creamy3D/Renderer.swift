@@ -38,7 +38,7 @@ final class Renderer: NSObject, ObservableObject {
     // MARK: Scene
     private let startTime: TimeInterval
     
-    private var camera = Camera(position: .zero, target: .zero, up: .zero, offset: .zero)
+    private var camera = Camera(rotation: .identity, position: .zero)
     private var projectionMatrix = float4x4()
     
     // MARK: - Mesh
